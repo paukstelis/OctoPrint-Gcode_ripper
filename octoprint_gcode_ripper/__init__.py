@@ -1,14 +1,6 @@
 # coding=utf-8
 from __future__ import absolute_import
 
-### (Don't forget to remove me)
-# This is a basic skeleton for your plugin's __init__.py. You probably want to adjust the class name of your plugin
-# as well as the plugin mixins it's subclassing from. This is really just a basic skeleton to get you started,
-# defining your plugin as a template plugin, settings and asset plugin. Feel free to add or remove mixins
-# as necessary.
-#
-# Take a look at the documentation on what other plugin mixins are available.
-
 import octoprint.plugin
 import octoprint.filemanager
 import octoprint.filemanager.util
@@ -32,6 +24,7 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
         self.start_diameter = float(0)
         self.current_diameter = float(0)
         self.rotation = float(0)
+        self.modifyA = False
         self.scalefactor = float(1)
         self.mapping = "Y2A"
         self.datafolder = None
@@ -60,7 +53,7 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
     ##~~ Softwareupdate hook
     def _get_templates(self):
         self.template_gcode = []
-        print("Getting template gcodes from data directory")
+        #print("Getting template gcodes from data directory")
         for file in os.listdir(self.datafolder):
             if file.endswith('.gcode'):
                 self.template_gcode.append(file)
@@ -71,12 +64,10 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
         gcr.Read_G_Code("{}/{}".format(self._settings.getBaseFolder("uploads"), gcode_file), XYarc2line=True, units="mm")
         wrapdiam = self.start_diameter + 2*(self.currentZ)
         output_name = "D{0}_R{1}_".format(int(wrapdiam), int(self.rotation))
-        if self.polarize:
-            output_name = "Polar_{0}".format(output_name)
         output_path = output_name+self.template_name
         path_on_disk = "{}/{}".format(self._settings.getBaseFolder("watched"), output_path)
         sf = self.scalefactor
-        temp,minx,maxx,miny,maxy,minz,maxz  = gcr.scale_rotate_code(gcr.g_code_data,[1,1,1,1],self.rotation)
+        temp,minx,maxx,miny,maxy,minz,maxz  = gcr.scale_rotate_code(gcr.g_code_data,[sf,sf,sf,1],self.rotation)
         midx = (minx+maxx)/2
         midy = (miny+maxy)/2
         x_zero = midx
@@ -91,11 +82,11 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
         mina = math.degrees(miny/(wrapdiam/2))
         maxa = math.degrees(maxy/(wrapdiam/2))
         maxarc = (abs(mina) + abs(maxa))
-        if not self.polarize:
-            pre = "DOBANGLE\nDIAM {0}\nDOMODA\nMAXARC {1:.3f}".format(wrapdiam,maxarc)
-            #pre = "DOBANGLE\nDIAM {0}\nDOMODA".format(wrapdiam)
-        else:
-            pre = "DOBANGLE\nDIAM {0}\n".format(wrapdiam)
+        pre = "DOBANGLE\nDIAM {0}\n".format(wrapdiam)
+
+        if self.modifyA:
+            pre = pre + "DOMODA\nMAXARC {1:.3f}".format(maxarc)
+
         with open(path_on_disk,"w") as newfile:
             for line in gcr.generategcode(temp, Rstock=wrapdiam/2, no_variables=True, Wrap=self.mapping, preamble=pre, postamble="STOPBANGLE", FSCALE="None"):
                 newfile.write(f"\n{line}")
@@ -108,12 +99,13 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
     def on_api_command(self, command, data):
         
         if command == "write_gcode":
-            print(data)
+            #print(data)
             self.selected_file = data["filename"]["path"]
             self.template_name = data["filename"]["display"]
             self.start_diameter = float(data["diameter"])
             self.rotation = float(data["rotationAngle"])
             self.polarize = bool(data["polar"])
+            self.modifyA = bool(data["modifyA"])
             self.scalefactor = float(data["scalefactor"])
             if self.polarize:
                 self.mapping = "Polar"
@@ -132,7 +124,7 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
 
         match = re.search(r'<(-?[^,]+)[,|][WM]Pos:(-?[\d\.]+),(-?[\d\.]+),(-?[\d\.]+),?(-?[\d\.]+)?,?(-?[\d\.]+)?', msg)
         self.currentZ = float(match.groups(1)[3])
-        print(self.currentZ)
+        #print(self.currentZ)
 
     def get_update_information(self):
         # Define the configuration for your plugin to use with the Software Update

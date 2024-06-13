@@ -12,6 +12,7 @@ $(function() {
         self.calc_diameter = ko.observable(0);
         self.rotationAngle = ko.observable(0);
         self.polarize = ko.observable(0);
+        self.modifyA = ko.observable(1);
         self.scaleFactor = ko.observable(1);
         self.gcodeFiles = ko.observableArray();
         self.selectedGCodeFile = ko.observable("");
@@ -19,6 +20,9 @@ $(function() {
         self.xPos = ko.observable("");
         self.yPos = ko.observable("");
         self.zPos = ko.observable("");
+
+        tab = document.getElementById("tab_plugin_gcode_ripper_link");
+        tab.innerHTML = tab.innerHTML.replace("Gcode_ripper Plugin", "GCode Templates");
 
         // Function to fetch list of GCode files
         self.fetchGCodeFiles = function() {
@@ -40,6 +44,7 @@ $(function() {
                 filename: self.selectedGCodeFile(),
                 rotationAngle: self.rotationAngle(),
                 polar: self.polarize(),
+                modifyA: self.modifyA(),
                 scalefactor: self.scaleFactor(),
             };
 
