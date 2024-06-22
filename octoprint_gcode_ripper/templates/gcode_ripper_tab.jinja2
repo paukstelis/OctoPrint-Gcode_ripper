@@ -2,23 +2,24 @@
 
     <div id="gcode_ripper_plugin_collapse" class="row-fluid">
             <div class="row" style="padding-left: 10px;">
-                <div class="span4">
+                <div class="span3">
                     <label for="diameter_input">Starting Diameter:</label>
-                    <input id="diameter_input" type="number" step="any" class="span4" data-bind="value: diameter" onchange="updateDiameter()">
+                    <input id="diameter_input" type="number" step="any" class="span5" data-bind="value: diameter" onchange="updateDiameter()">
                 
                 </div>
-                <div class="span4">
+                <div class="span3">
                     <label for="rotation_angle_input">Rotation Angle:</label>
-                    <input id="rotation_angle_input" type="number" step="any" class="span4" data-bind="value: rotationAngle">
+                    <input id="rotation_angle_input" type="number" step="any" class="span5" data-bind="value: rotationAngle">
                 </div>
-                <div class="span4">
+                <div class="span3">
                     <label for="scale_factor_input">Scale Factor:</label>
                     <input id="scale_factor_input" type="number" value="1" step="any" class="span4" data-bind="value: scaleFactor">
                 </div>
-                <div class="span4">
+                <div class="span3">
                     <label for="modifyA_input">Modify A-axis values:</label>
-                    <input id="modifyA_input" type="checkbox" value="1" class="span4" data-bind="value: modifyA">
+                    <input id="modifyA_input" type="checkbox" checked class="span3" data-bind="checked: modifyA">
                 </div>
+            </div>
             <div class="row" style="padding-left: 10px; padding-bottom: 10px;">
                 <div class="span12">
                     <label for="gcode_file_select">Select GCode File:</label>
@@ -28,8 +29,12 @@
                 </div>
             </div>
             <div class="row">
-                <div class="span12" style="padding-left: 10px;">
+                <div class="span3" style="padding-left: 10px;">
                     <button id="write_gcode_button" class="btn btn-primary" data-bind="click: writeGCode">Write Gcode</button>
+                </div>
+
+                <div class="span3" style="padding-left: 10px;">
+                    <button id="refresh_gcode_button" class="btn btn-primary" data-bind="click: fetchGCodeFiles">Refresh Files</button>
                 </div>
             </div>
     </div>

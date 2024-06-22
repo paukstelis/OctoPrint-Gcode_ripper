@@ -11,7 +11,6 @@ $(function() {
         self.diameter = ko.observable(0);
         self.calc_diameter = ko.observable(0);
         self.rotationAngle = ko.observable(0);
-        self.polarize = ko.observable(0);
         self.modifyA = ko.observable(1);
         self.scaleFactor = ko.observable(1);
         self.gcodeFiles = ko.observableArray();
@@ -43,7 +42,6 @@ $(function() {
                 diameter: self.diameter(),
                 filename: self.selectedGCodeFile(),
                 rotationAngle: self.rotationAngle(),
-                polar: self.polarize(),
                 modifyA: self.modifyA(),
                 scalefactor: self.scaleFactor(),
             };

@@ -66,7 +66,8 @@ class G_Code_Rip:
         pos     =['','','']
         pos_last=['','','']
         POS     =[complex(0,1),complex(0,1),complex(0,1)]
-        feed = 0        
+        feed = 0
+        power = 0        
         
         #########################
         for line in fin:
@@ -371,8 +372,8 @@ class G_Code_Rip:
                     Rin= float(com[1])*scale
                     CENTER = self.get_center(POS,POS_LAST,Rin,mvtype,plane)
 
-                #elif com[0] == "S":
-                #   passthru = passthru + "%s " %(com[1])
+                elif com[0] == "S":
+                   power = float(com[1])
                 ###################
                 elif com[0] == "F":
                     feed = float(com[1]) * scale
@@ -417,7 +418,7 @@ class G_Code_Rip:
                 if mvtype == 0:
                     self.g_code_data.append([mvtype,pos_last[:],pos[:]])
                 if mvtype == 1:
-                    self.g_code_data.append([mvtype,pos_last[:],pos[:],feed])
+                    self.g_code_data.append([mvtype,pos_last[:],pos[:],feed,power])
                 if mvtype == 2 or mvtype == 3:
                     if plane == "17":
                         if XYarc2line == False:
@@ -920,8 +921,9 @@ class G_Code_Rip:
         i_y=int(y/yPartitionLength)
         return i_x,i_y
 
+
     ####################################### 
-    def scale_rotate_code(self,code2scale,scale=[1.0,1.0,1.0,1.0],angle=0.0):
+    def scale_rotate_code(self,code2scale,scale=[1.0,1.0,1.0,1.0],angle=0.0,split_moves=False,min_seg_length=1.0):
         from math import radians, sqrt
 
         if code2scale == []:
@@ -937,6 +939,7 @@ class G_Code_Rip:
         passthru = ""
         POS     =[0,0,0]
         feed = 0
+        power = 0
         out = []
 
         L = 0
@@ -951,6 +954,7 @@ class G_Code_Rip:
                 CENTER   = ['','','']
                 if line[0] == 1:
                     feed     = line[3] * scale[3]
+                    power    = line[4]
 
             elif line[0] == 3 or line[0] == 2:
                 mvtype   = line[0]
@@ -967,7 +971,7 @@ class G_Code_Rip:
 
                 pos      = self.scale_rot_coords(POS,scale,angle)
                 pos_last = self.scale_rot_coords(POS_LAST,scale,angle)
-
+                
 
                 if CENTER[0]!='' and CENTER[1]!='':
                     center = self.scale_rot_coords(CENTER,scale,angle)
@@ -996,7 +1000,24 @@ class G_Code_Rip:
                     out.append( [mvtype,pos_last,pos] )
                 
                 if mvtype == 1:
-                    out.append( [mvtype,pos_last,pos,feed] )
+                    if split_moves:
+                        xy_move_dist = sqrt((pos[0] - pos_last[0]) ** 2 + (pos[1] - pos_last[1]) ** 2)
+                        if xy_move_dist > min_seg_length:
+                            segments = floor(xy_move_dist / min_seg_length) + 1
+                            x_segment_length = pos[0] - pos_last[0] / segments
+                            y_segment_length = pos[1] - pos_last[1] / segments
+                            newmove = []
+                            oldmove = pos_last[:]
+                            for i in range(1, segments + 1):
+                                newX = float("{:.3f}".format(pos_last[0] + (x_segment_length * i)))
+                                newY = float("{:.3f}".format(pos_last[1] + (y_segment_length * i)))
+                                newmove.append([mvtype,oldmove,[newX, newY, pos[2]],feed,power])
+                                oldmove = [newX, newY, POS[2]]
+                            out.extend(newmove)
+                        else:
+                            out.append( [mvtype,pos_last,pos,feed,power] )     
+                    else:
+                        out.append( [mvtype,pos_last,pos,feed,power] )
 
                 if mvtype == 2 or mvtype == 3:
                     out.append( [ mvtype,pos_last,pos,center, feed] )
@@ -1134,6 +1155,7 @@ class G_Code_Rip:
         pos     =[0,0,0]
         pos_last=[0,0,0]
         feed = 0
+        power = 0
         out = []
 
         L = 0
@@ -1148,6 +1170,7 @@ class G_Code_Rip:
                 CENTER   = ['','','']
                 if line[0] == 1:
                     feed     = line[3]
+                    power    = line[4]
 
             elif line[0] == 3 or line[0] == 2:
                 mvtype   = line[0]
@@ -1173,7 +1196,7 @@ class G_Code_Rip:
                     out.append( [mvtype,pos_last,pos] )
                 
                 if mvtype == 1:
-                    out.append( [mvtype,pos_last,pos,feed] )
+                    out.append( [mvtype,pos_last,pos,feed,power] )
 
                 if mvtype == 2 or mvtype == 3:
                     out.append( [ mvtype,pos_last,pos,center, feed] )
@@ -1247,7 +1270,7 @@ class G_Code_Rip:
                 msg = msg + "be witten to a file named 'probe_points.txt'.\n"
                 msg = msg + "The file will be located in the linuxcnc\n"
                 msg = msg + "configuration folder."
-                #message_box("Probe Data File",msg)
+                message_box("Probe Data File",msg)
         
         elif (probe_soft=="MACH3"):
             if savepts:
@@ -1269,7 +1292,7 @@ class G_Code_Rip:
                 datafileclose= ""
                 msg =       "The Probe point data from DDCS will\n"
                 msg = msg + "be witten to a file named 'ProbeMap0.txt'."
-                #message_box("Probe Data File",msg)
+                message_box("Probe Data File",msg)
             Gprobe="M101\nG01"
             ZProbeValue = "#701"
         
@@ -1515,7 +1538,7 @@ class G_Code_Rip:
         if Reverse_Rotary:
             sign = -1
 
-        self.MODAL_VAL={'X':" ", 'Y':" ", 'Z':" ", 'F':" ", 'A':" ", 'B':" ", 'I':" ", 'J':" "}
+        self.MODAL_VAL={'X':" ", 'Y':" ", 'Z':" ", 'F':" ", 'A':" ", 'B':" ", 'I':" ", 'J':" ", 'S':""}
         LASTX = 0
         LASTY = 0
         LASTZ = z_safe
@@ -1599,8 +1622,7 @@ class G_Code_Rip:
                     #if line[2][0].imag == 0:
                     if (not isinstance(line[2][0], complex)):
                         coordB[0]=sign*degrees(line[2][0]/Rstock)
-                elif Wrap == "Polar":
-                    
+                elif Wrap == "Polar":                 
                     if (not isinstance(line[1][1], complex)):
                         #print(line[1])
                         rho = sqrt((Rstock+line[1][0]).real **2 + (line[1][1]).real **2)
@@ -1681,8 +1703,9 @@ class G_Code_Rip:
                                 Feed_adj = abs(DAf / (D012/line[3]))
                     else:
                         Feed_adj = line[3]
+                        Power = line[4]
                     LINE = self.app_gcode_line(LINE,"F",Feed_adj  ,PLACES_F,WriteAll)
-                    
+                    LINE = self.app_gcode_line(LINE,"S",Power  ,PLACES_F,WriteAll)
                 elif (line[0] == 2) or (line[0] == 3):
                     Feed_adj = line[4]
                     LINE = self.app_gcode_line(LINE,"I",line[3][0],DECP[0]  ,WriteAll)

@@ -85,7 +85,7 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
         pre = "DOBANGLE\nDIAM {0}\n".format(wrapdiam)
 
         if self.modifyA:
-            pre = pre + "DOMODA\nMAXARC {1:.3f}".format(maxarc)
+            pre = pre + "DOMODA\nMAXARC {0:.3f}".format(maxarc)
 
         with open(path_on_disk,"w") as newfile:
             for line in gcr.generategcode(temp, Rstock=wrapdiam/2, no_variables=True, Wrap=self.mapping, preamble=pre, postamble="STOPBANGLE", FSCALE="None"):
@@ -104,13 +104,9 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
             self.template_name = data["filename"]["display"]
             self.start_diameter = float(data["diameter"])
             self.rotation = float(data["rotationAngle"])
-            self.polarize = bool(data["polar"])
             self.modifyA = bool(data["modifyA"])
             self.scalefactor = float(data["scalefactor"])
-            if self.polarize:
-                self.mapping = "Polar"
-            else:
-                self.mapping = "Y2A"
+            self.mapping = "Y2A"
             self.generate_gcode()
 
     def hook_gcode_received(self, comm_instance, line, *args, **kwargs):
