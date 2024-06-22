@@ -1001,20 +1001,23 @@ class G_Code_Rip:
                 
                 if mvtype == 1:
                     if split_moves:
-                        xy_move_dist = sqrt((pos[0] - pos_last[0]) ** 2 + (pos[1] - pos_last[1]) ** 2)
+                        xy_move_dist = sqrt((pos_last[0] - pos[0]) ** 2 + (pos_last[1] - pos[1]) ** 2)
                         if xy_move_dist > min_seg_length:
                             segments = floor(xy_move_dist / min_seg_length) + 1
-                            x_segment_length = pos[0] - pos_last[0] / segments
-                            y_segment_length = pos[1] - pos_last[1] / segments
+                            x_segment_length = (pos[0] - pos_last[0]) / segments
+                            y_segment_length = (pos_last[1] - pos[1]) / segments
                             newmove = []
                             oldmove = pos_last[:]
+                            print(oldmove)
                             for i in range(1, segments + 1):
                                 newX = float("{:.3f}".format(pos_last[0] + (x_segment_length * i)))
                                 newY = float("{:.3f}".format(pos_last[1] + (y_segment_length * i)))
                                 newmove.append([mvtype,oldmove,[newX, newY, pos[2]],feed,power])
-                                oldmove = [newX, newY, POS[2]]
+                                oldmove = [newX, newY, pos[2]]
+                                print(oldmove)
                             out.extend(newmove)
                         else:
+                            print(pos)
                             out.append( [mvtype,pos_last,pos,feed,power] )     
                     else:
                         out.append( [mvtype,pos_last,pos,feed,power] )
