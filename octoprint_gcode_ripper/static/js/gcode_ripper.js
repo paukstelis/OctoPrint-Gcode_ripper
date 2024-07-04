@@ -76,6 +76,6 @@ $(function() {
         // ViewModels your plugin depends on, e.g. loginStateViewModel, settingsViewModel, ...
         dependencies: ["filesViewModel","accessViewModel"],
         // Elements to bind to, e.g. #settings_plugin_gcode_ripper, #tab_plugin_gcode_ripper, ...
-        elements: [ "#tab_plugin_gcode_ripper","#tab_plugin_bettergrblsupport" ]
+        elements: [ "#tab_plugin_gcode_ripper", ]
     });
 });
