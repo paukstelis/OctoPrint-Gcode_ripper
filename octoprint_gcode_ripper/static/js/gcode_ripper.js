@@ -21,7 +21,7 @@ $(function() {
         self.zPos = ko.observable("");
 
         tab = document.getElementById("tab_plugin_gcode_ripper_link");
-        tab.innerHTML = tab.innerHTML.replace("Gcode_ripper Plugin", "GCode Templates");
+        tab.innerHTML = tab.innerHTML.replaceAll("Gcode_ripper Plugin", "GCode Templates");
 
         // Function to fetch list of GCode files
         self.fetchGCodeFiles = function() {
