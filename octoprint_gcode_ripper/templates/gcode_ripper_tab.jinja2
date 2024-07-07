@@ -23,7 +23,7 @@
             <div class="row" style="padding-left: 10px; padding-bottom: 10px;">
                 <div class="span12">
                     <label for="gcode_file_select">Select GCode File:</label>
-                    <select id="gcode_file_select" class="span12" data-bind="options: gcodeFiles, optionsText: 'name', value: selectedGCodeFile"></select>
+                    <select id="gcode_file_select" class="span12" data-bind="options: gcodeFiles, optionsText: 'name', value: selectedGCodeFile" onchange="updateThumb()"></select>
                     <img src="/plugin/gcode_ripper/static/img/pewa-rotation.png" width="100%">
                     <br>
                 </div>
