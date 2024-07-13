@@ -23,9 +23,14 @@
             <div class="row" style="padding-left: 10px; padding-bottom: 10px;">
                 <div class="span12">
                     <label for="gcode_file_select">Select GCode File:</label>
-                    <select id="gcode_file_select" class="span12" data-bind="options: gcodeFiles, optionsText: 'name', value: selectedGCodeFile" onchange="updateThumb()"></select>
-                    <img src="/plugin/gcode_ripper/static/img/pewa-rotation.png" width="100%">
-                    <br>
+                    <select id="gcode_file_select">
+                        <option value="">Loading...</option>
+                    </select>
+                </div>
+                <br>
+                <div>
+                    <img id="file_image" src="" width="100%">
+                </div>
                 </div>
             </div>
             <div class="row">
@@ -34,7 +39,7 @@
                 </div>
 
                 <div class="span3" style="padding-left: 10px;">
-                    <button id="refresh_gcode_button" class="btn btn-primary" data-bind="click: fetchGCodeFiles">Refresh Files</button>
+                    <button id="refresh_gcode_button" class="btn btn-primary" data-bind="click: updateFiles">Refresh Files</button>
                 </div>
             </div>
     </div>

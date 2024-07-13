@@ -30,11 +30,42 @@ $(function() {
                     var gcodeFiles = data.children
                     console.log(gcodeFiles);
                     self.gcodeFiles = gcodeFiles;
+                    populateFileSelector(gcodeFiles);
                 })
                 .fail(function() {
                     console.error("Failed to fetch GCode files.");
                 });
         };
+
+        function populateFileSelector(files) {
+            var fileSelector = $("#gcode_file_select");
+            fileSelector.empty();
+            fileSelector.append($("<option>").text("Select a G-code file").attr("value", ""));
+            files.forEach(function(file) {
+                if (file.type === "machinecode") {
+                    var option = $("<option>")
+                        .text(file.display)
+                        .attr("value", file.name)
+                        .attr("download",file.refs.download)
+                        .attr("img_url", file.bgs_imgurl); // Store metadata in data attribute
+                    fileSelector.append(option);
+                }
+            });
+        }
+    
+        $("#gcode_file_select").on("change", function() {
+            console.log("file selection changed");
+            var selectedFile = $(this).val();
+            var image_name = $("#gcode_file_select option:selected").attr("img_url");
+            var download_path = $("#gcode_file_select option:selected").attr("download");
+            if (image_name) {
+                download_path = download_path.substring(0,download_path.lastIndexOf("/"));
+                var fullpath = download_path+"/"+image_name;
+                $("#file_image").attr("src", fullpath).show();
+            } else {
+                $("#file_image").hide();
+            }
+        });
 
         // Function to submit API call with data
         self.writeGCode = function() {
@@ -59,17 +90,13 @@ $(function() {
         }
         // Fetch GCode files on initialization
         self.fetchGCodeFiles();
+
+        self.updateFiles = function() {
+            self.fetchGCodeFiles();
+        }
+
     }
     
-
-    self.updateDiameter = function() {
-        self.calc_diameter = self.diameter + 2*self.zPos;
-        return self.calc_diameter;
-    }
-
-    self.updateThumb = function() {
-        imagepath = self.selectedGCodeFile
-    }
 
     OCTOPRINT_VIEWMODELS.push({
         construct: Gcode_ripperViewModel,
