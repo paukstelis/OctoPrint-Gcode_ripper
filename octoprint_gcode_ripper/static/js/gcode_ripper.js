@@ -85,9 +85,14 @@ $(function() {
                     console.error("Failed to write GCode.");
                 });
         };
+
+
+
         self.onBeforeBinding = function () {
             self.fetchGCodeFiles();
+           
         }
+
         // Fetch GCode files on initialization
         self.fetchGCodeFiles();
 
