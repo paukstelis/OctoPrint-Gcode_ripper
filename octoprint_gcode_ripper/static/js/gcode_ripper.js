@@ -16,8 +16,6 @@ $(function() {
         self.gcodeFiles = ko.observableArray();
         self.selectedGCodeFile = ko.observable("");
         self.thumbnail_url = ko.observable('/static/img/tentacle-20x20.png');
-        self.xPos = ko.observable("");
-        self.yPos = ko.observable("");
         self.zPos = ko.observable("");
 
         tab = document.getElementById("tab_plugin_gcode_ripper_link");
@@ -67,6 +65,10 @@ $(function() {
             }
         });
 
+        $("#diameter_input").on("change", function() {
+            console.log($(this).val());
+        });
+
         // Function to submit API call with data
         self.writeGCode = function() {
             var data = {
@@ -100,6 +102,13 @@ $(function() {
             self.fetchGCodeFiles();
         }
 
+        self.onDataUpdaterPluginMessage = function(plugin, data) {
+            if (plugin == 'gcode_ripper' && data.type == 'grbl_state') {
+                self.zPos(Number.parseFloat(data.z).toFixed(2));
+                var newDiam = self.diameter - (self.zPos*2);
+                console.log(newDiam);
+            }
+        }        
     }
     
 
