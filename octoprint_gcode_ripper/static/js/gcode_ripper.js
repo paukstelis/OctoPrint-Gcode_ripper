@@ -39,6 +39,7 @@ $(function() {
             var fileSelector = $("#gcode_file_select");
             fileSelector.empty();
             fileSelector.append($("<option>").text("Select a G-code file").attr("value", ""));
+            var i = 0;
             files.forEach(function(file) {
                 if (file.type === "machinecode") {
                     var option = $("<option>")
@@ -46,18 +47,20 @@ $(function() {
                         .attr("value", file.name)
                         .attr("download",file.refs.download)
                         .attr("img_url", file.bgs_imgurl)
-                        .attr("complete", file); // Store metadata in data attribute
+                        .attr("index", i); // Store metadata in data attribute
                     fileSelector.append(option);
                 }
+                i++;
             });
         }
     
         $("#gcode_file_select").on("change", function() {
             //console.log("file selection changed");
-            self.selectedGCodeFile = $(this).complete();
             console.log($(this).val());
             var image_name = $("#gcode_file_select option:selected").attr("img_url");
             var download_path = $("#gcode_file_select option:selected").attr("download");
+            var objindex = $("#gcode_file_select option:selected").attr("index");
+            self.selectedGCodeFile = self.gcodeFiles[objindex];
             if (image_name) {
                 download_path = download_path.substring(0,download_path.lastIndexOf("/"));
                 var fullpath = download_path+"/"+image_name;
@@ -73,6 +76,8 @@ $(function() {
 
         // Function to submit API call with data
         self.writeGCode = function() {
+            //get file object
+            
             var data = {
                 diameter: self.diameter(),
                 filename: self.selectedGCodeFile(),
