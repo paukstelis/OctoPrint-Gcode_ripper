@@ -61,6 +61,7 @@ $(function() {
             var download_path = $("#gcode_file_select option:selected").attr("download");
             var objindex = $("#gcode_file_select option:selected").attr("index");
             self.selectedGCodeFile = self.gcodeFiles[objindex];
+            console.log(self.selectedGCodeFile);
             if (image_name) {
                 download_path = download_path.substring(0,download_path.lastIndexOf("/"));
                 var fullpath = download_path+"/"+image_name;
@@ -80,7 +81,7 @@ $(function() {
             
             var data = {
                 diameter: self.diameter(),
-                filename: self.selectedGCodeFile(),
+                filename: self.selectedGCodeFile,
                 rotationAngle: self.rotationAngle(),
                 modifyA: self.modifyA(),
                 scalefactor: self.scaleFactor(),
