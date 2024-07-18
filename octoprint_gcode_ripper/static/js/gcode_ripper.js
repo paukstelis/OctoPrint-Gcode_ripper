@@ -53,8 +53,8 @@ $(function() {
     
         $("#gcode_file_select").on("change", function() {
             //console.log("file selection changed");
-            self.selectedGCodeFile() = $(this).val();
-            console.log(self.selectedGCodeFile());
+            self.selectedGCodeFile = $(this).val();
+            console.log($(this).val());
             var image_name = $("#gcode_file_select option:selected").attr("img_url");
             var download_path = $("#gcode_file_select option:selected").attr("download");
             if (image_name) {
