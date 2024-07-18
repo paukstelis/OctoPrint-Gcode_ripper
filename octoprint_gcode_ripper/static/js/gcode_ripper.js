@@ -45,7 +45,8 @@ $(function() {
                         .text(file.display)
                         .attr("value", file.name)
                         .attr("download",file.refs.download)
-                        .attr("img_url", file.bgs_imgurl); // Store metadata in data attribute
+                        .attr("img_url", file.bgs_imgurl)
+                        .attr("complete", file); // Store metadata in data attribute
                     fileSelector.append(option);
                 }
             });
@@ -53,7 +54,7 @@ $(function() {
     
         $("#gcode_file_select").on("change", function() {
             //console.log("file selection changed");
-            self.selectedGCodeFile = $(this).val();
+            self.selectedGCodeFile = $(this).complete();
             console.log($(this).val());
             var image_name = $("#gcode_file_select option:selected").attr("img_url");
             var download_path = $("#gcode_file_select option:selected").attr("download");
