@@ -67,7 +67,7 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
         output_path = output_name+self.template_name
         path_on_disk = "{}/{}".format(self._settings.getBaseFolder("watched"), output_path)
         sf = self.scalefactor
-        temp,minx,maxx,miny,maxy,minz,maxz  = gcr.scale_rotate_code(gcr.g_code_data,[sf,sf,sf,1],self.rotation,split_moves=True)
+        temp,minx,maxx,miny,maxy,minz,maxz  = gcr.scale_rotate_code(gcr.g_code_data,[sf,sf,1,1],self.rotation,split_moves=True)
         midx = (minx+maxx)/2
         midy = (miny+maxy)/2
         x_zero = midx

@@ -26,7 +26,7 @@ $(function() {
             OctoPrint.files.listForLocation("local/templates", false)
                 .done(function(data) {
                     var gcodeFiles = data.children
-                    console.log(gcodeFiles);
+                    //console.log(gcodeFiles);
                     self.gcodeFiles = gcodeFiles;
                     populateFileSelector(gcodeFiles);
                 })
@@ -52,8 +52,9 @@ $(function() {
         }
     
         $("#gcode_file_select").on("change", function() {
-            console.log("file selection changed");
-            var selectedFile = $(this).val();
+            //console.log("file selection changed");
+            self.selectedGCodeFile = $(this).val();
+            console.log(self.selectedGCodeFile());
             var image_name = $("#gcode_file_select option:selected").attr("img_url");
             var download_path = $("#gcode_file_select option:selected").attr("download");
             if (image_name) {
@@ -105,8 +106,8 @@ $(function() {
         self.onDataUpdaterPluginMessage = function(plugin, data) {
             if (plugin == 'gcode_ripper' && data.type == 'grbl_state') {
                 self.zPos(Number.parseFloat(data.z).toFixed(2));
-                let newDiam = (Number.parseFloat(self.diameter()) + (self.zPos()*2));
-                console.log(newDiam);
+                self.calc_diameter() = (Number.parseFloat(self.diameter()) + (self.zPos()*2));
+                //console.log(newDiam);
             }
         }        
     }
