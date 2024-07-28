@@ -27,6 +27,7 @@ $(function() {
                 .done(function(data) {
                     var gcodeFiles = data.children
                     //console.log(gcodeFiles);
+                    gcodeFiles.sort((a,b) => { return a.name.localeCompare(b.name) });
                     self.gcodeFiles = gcodeFiles;
                     populateFileSelector(gcodeFiles);
                 })
@@ -61,7 +62,7 @@ $(function() {
             var download_path = $("#gcode_file_select option:selected").attr("download");
             var objindex = $("#gcode_file_select option:selected").attr("index");
             self.selectedGCodeFile = self.gcodeFiles[objindex];
-            console.log(self.selectedGCodeFile);
+            console.log(objindex);
             if (image_name) {
                 download_path = download_path.substring(0,download_path.lastIndexOf("/"));
                 var fullpath = download_path+"/"+image_name;
