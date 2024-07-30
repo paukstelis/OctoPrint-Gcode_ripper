@@ -79,7 +79,7 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
             output_name = "POLAR_R{0}_".format(int(self.rotation))
             output_path = output_name+self.template_name
             path_on_disk = "{}/{}".format(self._settings.getBaseFolder("watched"), output_path)
-            self.mapping = "POLAR"
+            self.mapping = "Polar"
             polar = True
             wrapdiam=0.5
 
