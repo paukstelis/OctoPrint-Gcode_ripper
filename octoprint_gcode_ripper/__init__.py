@@ -81,6 +81,7 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
             path_on_disk = "{}/{}".format(self._settings.getBaseFolder("watched"), output_path)
             self.mapping = "POLAR"
             polar = True
+            wrapdiam=0.5
 
         temp = gcr.scale_translate(temp,translate=[x_zero,y_zero,0.0])
         gcr.scaled_trans = temp
