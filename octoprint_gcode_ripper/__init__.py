@@ -62,6 +62,8 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
         gcr = G_Code_Rip.G_Code_Rip()
         gcode_file = self.selected_file
         gcr.Read_G_Code("{}/{}".format(self._settings.getBaseFolder("uploads"), gcode_file), XYarc2line=True, units="mm")
+        self.mapping = "Y2A"
+        polar = False
         wrapdiam = self.start_diameter + 2*(self.currentZ)
         output_name = "D{0}_R{1}_".format(int(wrapdiam), int(self.rotation))
         output_path = output_name+self.template_name
@@ -72,6 +74,14 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
         midy = (miny+maxy)/2
         x_zero = midx
         y_zero = midy
+        #Refactor for polar coordinate case
+        if self.start_diameter < maxx:
+            output_name = "POLAR_R{0}_".format(int(self.rotation))
+            output_path = output_name+self.template_name
+            path_on_disk = "{}/{}".format(self._settings.getBaseFolder("watched"), output_path)
+            self.mapping = "Polar"
+            polar = True
+            wrapdiam=0.5
 
         temp = gcr.scale_translate(temp,translate=[x_zero,y_zero,0.0])
         gcr.scaled_trans = temp
@@ -79,12 +89,13 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
         maxx = maxx - x_zero
         miny = miny - y_zero
         maxy = maxy - y_zero
-        mina = math.degrees(miny/(wrapdiam/2))
-        maxa = math.degrees(maxy/(wrapdiam/2))
-        maxarc = (abs(mina) + abs(maxa))
+        if not polar:
+            mina = math.degrees(miny/(wrapdiam/2))
+            maxa = math.degrees(maxy/(wrapdiam/2))
+            maxarc = (abs(mina) + abs(maxa))
         pre = "DOBANGLE\nDIAM {0}\n".format(wrapdiam)
 
-        if self.modifyA:
+        if self.modifyA and not polar:
             pre = pre + "DOMODA\nMAXARC {0:.3f}".format(maxarc)
 
         with open(path_on_disk,"w") as newfile:
