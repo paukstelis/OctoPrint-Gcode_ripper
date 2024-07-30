@@ -88,9 +88,10 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
         maxx = maxx - x_zero
         miny = miny - y_zero
         maxy = maxy - y_zero
-        mina = math.degrees(miny/(wrapdiam/2))
-        maxa = math.degrees(maxy/(wrapdiam/2))
-        maxarc = (abs(mina) + abs(maxa))
+        if not polar:
+            mina = math.degrees(miny/(wrapdiam/2))
+            maxa = math.degrees(maxy/(wrapdiam/2))
+            maxarc = (abs(mina) + abs(maxa))
         pre = "DOBANGLE\nDIAM {0}\n".format(wrapdiam)
 
         if self.modifyA and not polar:
