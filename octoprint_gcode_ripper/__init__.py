@@ -76,7 +76,7 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
         y_zero = midy
         #Refactor for polar coordinate case
         if self.start_diameter < maxx:
-            output_name = "POLAR_R{1}_".format(int(self.rotation))
+            output_name = "POLAR_R{0}_".format(int(self.rotation))
             output_path = output_name+self.template_name
             path_on_disk = "{}/{}".format(self._settings.getBaseFolder("watched"), output_path)
             self.mapping = "POLAR"
