@@ -1633,12 +1633,13 @@ class G_Code_Rip:
                         #print(line[1])
                         rho = sqrt((Rstock+line[1][0]).real **2 + (line[1][1]).real **2)
                         #print(rho)
-                        coordA[0] = rho - Rstock
+                        #invert sign for X-axis change
+                        coordA[0] = (rho - Rstock)*-1
                         coordA[1]=sign*degrees(atan2(line[1][1],(Rstock+line[1][0]).real))
                     if (not isinstance(line[2][1], complex)):
                         rho = sqrt((Rstock+line[2][0]).real **2 + (line[2][1]).real **2)
                         #print(rho)
-                        coordB[0] = rho - Rstock
+                        coordB[0] = (rho - Rstock)*-1
                         coordB[1]=sign*degrees(atan2(line[2][1],(Rstock+line[2][0]).real))
 
                 dx = coordA[0]-LASTX
