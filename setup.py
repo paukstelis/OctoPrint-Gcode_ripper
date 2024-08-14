@@ -14,17 +14,17 @@ plugin_package = "octoprint_gcode_ripper"
 plugin_name = "OctoPrint-Gcode_ripper"
 
 # The plugin's version. Can be overwritten within OctoPrint's internal data via __plugin_version__ in the plugin module
-plugin_version = "0.1.3"
+plugin_version = "0.1.4"
 
 # The plugin's description. Can be overwritten within OctoPrint's internal data via __plugin_description__ in the plugin
 # module
-plugin_description = """TODO"""
+plugin_description = "Modify Gcode coordinates using G-Code ripper."
 
 # The plugin's author. Can be overwritten within OctoPrint's internal data via __plugin_author__ in the plugin module
 plugin_author = "PP"
 
 # The plugin's author's mail address.
-plugin_author_email = "shocksofmighty@gmail.com"
+plugin_author_email = "transpirationturning@gmail.com"
 
 # The plugin's homepage URL. Can be overwritten within OctoPrint's internal data via __plugin_url__ in the plugin module
 plugin_url = "https://github.com/paukstelis/OctoPrint-Gcode_ripper"
