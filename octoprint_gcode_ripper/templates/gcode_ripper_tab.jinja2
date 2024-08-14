@@ -1,41 +1,74 @@
 <!-- gcode_ripper_tab.jinja2 -->
 
     <div id="gcode_ripper_plugin_collapse" class="row-fluid">
-            <div class="row" style="padding-left: 10px;">
-                <div class="span3">
-                    <label for="diameter_input">Starting Diameter:</label>
-                    <input id="diameter_input" type="number" step="any" class="span5" data-bind="value: diameter">
-                
-                </div>
-                <div class="span3">
+        <div class="row" style="padding-left: 10px;">
+            
+            <div class="span3">
+                <label for="diameter_input">Starting Diameter:</label>
+                <input id="diameter_input" type="number" step="any" class="span5" data-bind="value: diameter">
+            </div>
+            
+            <div class="span3">
                     <label for="rotation_angle_input">Rotation Angle:</label>
                     <input id="rotation_angle_input" type="number" step="any" class="span5" data-bind="value: rotationAngle">
-                </div>
-                <div class="span3">
+            </div>
+            
+            <div class="span3">
                     <label for="scale_factor_input">Scale Factor:</label>
                     <input id="scale_factor_input" type="number" value="1" step="any" class="span4" data-bind="value: scaleFactor">
-                </div>
-                <!--
-                <div class="span3">
-                    <label for="modifyA_input">Modify A-axis values:</label>
-                   <input id="modifyA_input" type="checkbox" checked class="span3" data-bind="checked: modifyA">
-                </div>
-                -->
             </div>
-            <div class="row" style="padding-left: 10px; padding-bottom: 10px;">
+
+            <div class="row" style="padding-left: 20px; padding-bottom: 10px;">
                 <div class="span12">
                     <label for="gcode_file_select">Select GCode File:</label>
                     <select id="gcode_file_select">
                         <option value="">Loading...</option>
                     </select>
                 </div>
-                <br>
-                <div>
-                    <img id="file_image" src="" width="100%">
-                </div>
-                </div>
             </div>
-            <div class="row">
+            
+        </div>
+        <div class="row" style="padding-left: 20px; padding-bottom: 10px;">
+            <div class="accordian-group" id="extra_options">
+                <div class="accordian-heading">
+                    <a class="accordian-toggle" data-toggle="collapse" href="#extra_options_collapse">Extra options</a>
+                </div>
+                <div id="extra_options_collapse" class="accordian-body collapse">
+                    <div class="span12">
+                        <label for="modifyA_input">Modify A-axis values:
+                        <input id="modifyA_input" type="checkbox" checked data-bind="checked: modifyA">
+                        </label>
+                    </div>
+                    <div class="span12">
+                        <label for="split_input">Split moves:
+                        <input id="split_input" type="checkbox" checked data-bind="checked: split_moves">
+                        </label>
+                    </div>
+ 
+                    <div class="span12">
+                        <label for="min_seg_input">Minimum segment length (mm):
+                        <input id="min_seg_input" type="number" value="1" step="any" data-bind="value: min_seg_length">
+                        </label>
+                    </div>
+                    <div class="span12">
+                        <label for="origin_sel">Origin:
+                        <select class="span4" id="origin_sel" name="origin_sel" data-bind="value: origin">
+                            <option value="center">Center</option>
+                            <option value="left">Left</option>
+                            <option value="right">Right</option>
+                        </select>
+                        </label>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <hr>
+        <div>
+                <img id="file_image" src="" width="100%">
+        </div>
+        <hr>
+        <div class="row">
                 <div class="span3" style="padding-left: 10px;">
                     <button id="write_gcode_button" class="btn btn-primary" data-bind="click: writeGCode">Write Gcode</button>
                 </div>
@@ -43,5 +76,30 @@
                 <div class="span3" style="padding-left: 10px;">
                     <button id="refresh_gcode_button" class="btn btn-primary" data-bind="click: updateFiles">Refresh Files</button>
                 </div>
-            </div>
+                
+                <div class="span3" style="padding-left: 10px;">
+                    <button id="edit_meta_button" class="btn btn-primary" data-bind="click: show_meta_overlay">Edit MetaData</button>
+                </div>
+        </div>
+
+
+    </div>
+    <div id="edit_meta_overlay" class="modal hide fade">
+        <div class="modal-header">
+            <a href="#" class="close" data-dismiss="modal" aria-hidden="true">&times;</a>
+            <h3 class="modal-title">Edit Image</h3>
+        </div>
+        <div class="modal-body">
+            <h4 id="filetoedit">Run Settings</h4>
+            <br>
+            <label for="edit_meta_list">Select Image File:</label>
+            <select id="edit_meta_list">
+                <option value="">Loading...</option>
+            </select>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn btn-cancel" data-dismiss="modal" aria-hidden="true">Cancel</button>
+            <button class="btn btn-danger btn-confirm">Confirm</button>
+        </div>
     </div>
