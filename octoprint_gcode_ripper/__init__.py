@@ -15,8 +15,9 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
     octoprint.plugin.StartupPlugin,
     octoprint.plugin.SimpleApiPlugin,
     octoprint.plugin.TemplatePlugin
-):
 
+):
+         
     def __init__(self):
         self.template_gcode = []
         self.selected_file = None
@@ -26,18 +27,31 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
         self.rotation = float(0)
         self.modifyA = False
         self.scalefactor = float(1)
+        self.origin = "center"
         self.mapping = "Y2A"
+        self.split_moves = True
+        self.min_seg = 1.0
         self.datafolder = None
         self.template_name = None
         #self.watched_path = self._settings.global_get_basefolder("watched")
     ##~~ SettingsPlugin mixin
     def initialize(self):
         self.datafolder = self.get_plugin_data_folder()
-    
+
+    #integrated directly from upload anything plugin by 
+    @property
+    def allowed(self):
+        if self._settings is None:
+            return ""
+        else:
+            return str(self._settings.get(["allowed"]))
+        
     def get_settings_defaults(self):
-        return {
-            # put your plugin's default settings here
-        }
+            return ({'allowed': 'png, gif, jpg'})
+
+    def get_extension_tree(self, *args, **kwargs):
+        return dict(model=dict(uploadanything=[x for x in self.allowed.replace(" ", "").split(",") if x != '']))
+    
 
     ##~~ AssetPlugin mixin
 
@@ -69,11 +83,20 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
         output_path = output_name+self.template_name
         path_on_disk = "{}/{}".format(self._settings.getBaseFolder("watched"), output_path)
         sf = self.scalefactor
-        temp,minx,maxx,miny,maxy,minz,maxz  = gcr.scale_rotate_code(gcr.g_code_data,[sf,sf,1,1],self.rotation,split_moves=True)
+        temp,minx,maxx,miny,maxy,minz,maxz  = gcr.scale_rotate_code(gcr.g_code_data,[sf,sf,1,1],self.rotation,split_moves=self.split_moves,min_seg_length=self.min_seg)
         midx = (minx+maxx)/2
         midy = (miny+maxy)/2
-        x_zero = midx
-        y_zero = midy
+        #determine origin position
+        if self.origin == "center":
+            x_zero = midx
+            y_zero = midy
+        if self.origin == "left":
+            x_zero = minx
+            y_zero = midy
+        if self.origin == "right":
+            x_zero = maxx
+            y_zero = midy
+            
         #Refactor for polar coordinate case
         if self.start_diameter < maxx:
             output_name = "POLAR_R{0}_".format(int(self.rotation))
@@ -102,9 +125,13 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
             for line in gcr.generategcode(temp, Rstock=wrapdiam/2, no_variables=True, Wrap=self.mapping, preamble=pre, postamble="STOPBANGLE", FSCALE="None"):
                 newfile.write(f"\n{line}")
     
+    def update_image(self):
+        self._file_manager.set_additional_metadata("local",self.selected_file,"bgs_imgurl",self.selected_image,overwrite=True)
+
     def get_api_commands(self):
         return dict(
-            write_gcode=[]
+            write_gcode=[],
+            editmeta=[]
         )
     
     def on_api_command(self, command, data):
@@ -117,8 +144,16 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
             self.rotation = float(data["rotationAngle"])
             self.modifyA = bool(data["modifyA"])
             self.scalefactor = float(data["scalefactor"])
+            self.origin = data["origin"]
             self.mapping = "Y2A"
+            self.split_moves = bool(data["split_moves"])
+            self.min_seg = float(data["min_seg"])
             self.generate_gcode()
+
+        if command == "editmeta":
+            self.selected_file = data["filename"]["path"]
+            self.selected_image = data["imagefile"]
+            self.update_image()
 
     def hook_gcode_received(self, comm_instance, line, *args, **kwargs):
         # look for a status message
@@ -172,5 +207,6 @@ def __plugin_load__():
     global __plugin_hooks__
     __plugin_hooks__ = {
         "octoprint.plugin.softwareupdate.check_config": __plugin_implementation__.get_update_information,
-        'octoprint.comm.protocol.gcode.received': __plugin_implementation__.hook_gcode_received
+        "octoprint.comm.protocol.gcode.received": __plugin_implementation__.hook_gcode_received,
+        "octoprint.filemanager.extension_tree": __plugin_implementation__.get_extension_tree
     }

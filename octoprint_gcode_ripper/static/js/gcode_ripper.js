@@ -11,12 +11,18 @@ $(function() {
         self.diameter = ko.observable(0);
         self.calc_diameter = ko.observable(0);
         self.rotationAngle = ko.observable(0);
+        self.scaleFactor = ko.observable(1.0);
         self.modifyA = ko.observable(1);
-        self.scaleFactor = ko.observable(1);
+        self.split_moves = ko.observable(1);
+        self.min_seg_length = ko.observable(1.0);
+        self.origin = ko.observable("center");
         self.gcodeFiles = ko.observableArray();
         self.selectedGCodeFile = ko.observable("");
+        self.selectedImageFile = ko.observable("");
+        self.newimage = ko.observable("");
         self.thumbnail_url = ko.observable('/static/img/tentacle-20x20.png');
         self.zPos = ko.observable("");
+        
 
         tab = document.getElementById("tab_plugin_gcode_ripper_link");
         tab.innerHTML = tab.innerHTML.replaceAll("Gcode_ripper Plugin", "GCode Templates");
@@ -29,20 +35,37 @@ $(function() {
                     //console.log(gcodeFiles);
                     gcodeFiles.sort((a,b) => { return a.name.localeCompare(b.name) });
                     self.gcodeFiles = gcodeFiles;
-                    populateFileSelector(gcodeFiles);
+                    populateFileSelector(gcodeFiles, "#gcode_file_select", "machinecode");
                 })
                 .fail(function() {
                     console.error("Failed to fetch GCode files.");
                 });
         };
 
-        function populateFileSelector(files) {
-            var fileSelector = $("#gcode_file_select");
+        function fetchImageFiles() {
+            $.ajax({
+                url: API_BASEURL + "files/local/templates",
+                type: "GET",
+                success: function(response) {
+                    var gcodeFiles = response.children;
+                    console.log(gcodeFiles);
+                    gcodeFiles.sort((a,b) => { return a.name.localeCompare(b.name) });
+                    self.gcodeFiles = gcodeFiles;
+                },
+                error: function(xhr, status, error) {
+                    console.error("Failed to fetch files: ", error);
+                }
+                
+            });
+        }
+
+        function populateFileSelector(files, elem, type) {
+            var fileSelector = $(elem);
             fileSelector.empty();
-            fileSelector.append($("<option>").text("Select a G-code file").attr("value", ""));
+            fileSelector.append($("<option>").text("Select file").attr("value", ""));
             var i = 0;
             files.forEach(function(file) {
-                if (file.type === "machinecode") {
+                if (file.type === type) {
                     var option = $("<option>")
                         .text(file.display)
                         .attr("value", file.name)
@@ -54,10 +77,10 @@ $(function() {
                 i++;
             });
         }
-    
+
         $("#gcode_file_select").on("change", function() {
             //console.log("file selection changed");
-            console.log($(this).val());
+            //console.log($(this).val());
             var image_name = $("#gcode_file_select option:selected").attr("img_url");
             var download_path = $("#gcode_file_select option:selected").attr("download");
             var objindex = $("#gcode_file_select option:selected").attr("index");
@@ -72,9 +95,24 @@ $(function() {
             }
         });
 
+        $("#edit_meta_list").on("change", function() {
+            self.selectedImageFile = $("#edit_meta_list option:selected").attr("value");
+            console.log(self.selectedImageFile);
+        });
+
         $("#diameter_input").on("change", function() {
             console.log($(this).val());
         });
+
+        $('#edit_meta_overlay').on('show.bs.modal', function (event) {
+            var newtitle = "Assign image for "+self.selectedGCodeFile.name;
+            //self.fetchGCodeFiles();
+            fetchImageFiles();
+            //console.log(self.gcodeFiles);
+            populateFileSelector(self.gcodeFiles,"#edit_meta_list","model");
+            $(this).find('h4#filetoedit').text(newtitle);
+         });
+        
 
         // Function to submit API call with data
         self.writeGCode = function() {
@@ -86,6 +124,9 @@ $(function() {
                 rotationAngle: self.rotationAngle(),
                 modifyA: self.modifyA(),
                 scalefactor: self.scaleFactor(),
+                split_moves: self.split_moves(),
+                min_seg: self.min_seg_length(),
+                origin: self.origin(),
             };
 
             OctoPrint.simpleApiCommand("gcode_ripper", "write_gcode", data)
@@ -97,18 +138,58 @@ $(function() {
                 });
         };
 
+        self.show_meta_overlay = function() {
+            //console.log(self.selectedGCodeFile);
+            //probably a better way to check this
+            if (self.selectedGCodeFile.name.length < 3) {
+                alert("Select a Gcode file from the drop down menu first.");
+                return;
+            }
 
+            showDialog("#edit_meta_overlay", function(dialog){
+                //console.log("Confirmed");
+                OctoPrint.simpleApiCommand("gcode_ripper", "editmeta", 
+                    {   
+                        "filename": self.selectedGCodeFile,
+                        "imagefile": self.selectedImageFile
+                    });
+                    
+                    dialog.modal('hide');
+            });
+        }
+
+        function showDialog(dialogId, confirmFunction){
+            var myDialog = $(dialogId);
+            var confirmButton = $("button.btn-confirm", myDialog);
+            var cancelButton = $("button.btn-cancel", myDialog);
+            //var dialogTitle = $("#filetoedit", myDialog);
+            //dialogTitle.innerText = title;
+            confirmButton.unbind("click");
+            confirmButton.bind("click", function() {
+                //alert ("Do something");
+                confirmFunction(myDialog);
+            });
+            myDialog.modal({
+                //minHeight: function() { return Math.max($.fn.modal.defaults.maxHeight() - 80, 250); }
+            }).css({
+                width: 'auto',
+                'margin-left': function() { return -($(this).width() /2); }
+            });
+        }
 
         self.onBeforeBinding = function () {
             self.fetchGCodeFiles();
+            //populateFileSelector(gcodeFiles, "#gcode_file_select", "machinecode");
            
         }
 
         // Fetch GCode files on initialization
         self.fetchGCodeFiles();
+        //populateFileSelector(gcodeFiles, "#gcode_file_select", "machinecode");
 
         self.updateFiles = function() {
             self.fetchGCodeFiles();
+            //populateFileSelector(gcodeFiles, "#gcode_file_select", "machinecode");
         }
 
         self.onDataUpdaterPluginMessage = function(plugin, data) {
