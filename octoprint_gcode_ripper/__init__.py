@@ -50,7 +50,8 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
             return ({'allowed': 'png, gif, jpg'})
 
     def get_extension_tree(self, *args, **kwargs):
-        return dict(model=dict(uploadanything=[x for x in self.allowed.replace(" ", "").split(",") if x != '']))
+        #return dict(model=dict(uploadanything=[x for x in self.allowed.replace(" ", "").split(",") if x != '']))
+        return {'model': {'png': ["png", "jpg", "jpeg", "gif"]}}
     
 
     ##~~ AssetPlugin mixin
