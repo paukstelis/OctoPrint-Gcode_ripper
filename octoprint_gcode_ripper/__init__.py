@@ -47,11 +47,11 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
             return str(self._settings.get(["allowed"]))
         
     def get_settings_defaults(self):
-            return ({'allowed': 'png, gif, jpg'})
+            return ({'allowed': 'png, gif, jpg, txt, stl'})
 
     def get_extension_tree(self, *args, **kwargs):
         #return dict(model=dict(uploadanything=[x for x in self.allowed.replace(" ", "").split(",") if x != '']))
-        return {'model': {'png': ["png", "jpg", "jpeg", "gif"]}}
+        return {'model': {'png': ["png", "jpg", "jpeg", "gif", "txt", "stl"]}}
     
 
     ##~~ AssetPlugin mixin
@@ -120,7 +120,7 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
         pre = "DOBANGLE\nDIAM {0}\n".format(wrapdiam)
 
         if self.modifyA and not polar:
-            pre = pre + "DOMODA\nMAXARC {0:.3f}".format(maxarc)
+            pre = pre + "RTCM\nDOMODA\nMAXARC {0:.3f}".format(maxarc)
 
         with open(path_on_disk,"w") as newfile:
             for line in gcr.generategcode(temp, Rstock=wrapdiam/2, no_variables=True, Wrap=self.mapping, preamble=pre, postamble="STOPBANGLE", FSCALE="None"):
