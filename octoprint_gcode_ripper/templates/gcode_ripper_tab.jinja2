@@ -35,12 +35,14 @@
                 </div>
                 <div id="extra_options_collapse" class="accordian-body collapse">
                     <div class="span12">
-                        <label for="modifyA_input">Modify A-axis values:
+                        <label for="modifyA_input">Flat pockets:
+                        <i class="icon icon-info-sign" title="Extra Z-depth at cut origin. Uncheck for objects that are not simple pockets." data-toggle="tooltip"></i>
                         <input id="modifyA_input" type="checkbox" checked data-bind="checked: modifyA">
                         </label>
                     </div>
                     <div class="span12">
                         <label for="split_input">Split moves:
+                        <i class="icon icon-info-sign" title="Split moves into smaller moves defined by minimum segment length. Need for flat pockets and some other features." data-toggle="tooltip"></i>
                         <input id="split_input" type="checkbox" checked data-bind="checked: split_moves">
                         </label>
                     </div>
