@@ -117,10 +117,10 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
             mina = math.degrees(miny/(wrapdiam/2))
             maxa = math.degrees(maxy/(wrapdiam/2))
             maxarc = (abs(mina) + abs(maxa))
-        pre = "DOBANGLE\nDIAM {0}\n".format(wrapdiam)
+        pre = "RTCM\nDOBANGLE\nDIAM {0}\n".format(wrapdiam)
 
         if self.modifyA and not polar:
-            pre = pre + "RTCM\nDOMODA\nMAXARC {0:.3f}".format(maxarc)
+            pre = pre + "DOMODA\nMAXARC {0:.3f}".format(maxarc)
 
         with open(path_on_disk,"w") as newfile:
             for line in gcr.generategcode(temp, Rstock=wrapdiam/2, no_variables=True, Wrap=self.mapping, preamble=pre, postamble="STOPBANGLE", FSCALE="None"):

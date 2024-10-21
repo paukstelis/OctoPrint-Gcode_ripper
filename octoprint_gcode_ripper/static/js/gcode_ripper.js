@@ -195,7 +195,7 @@ $(function() {
         self.onDataUpdaterPluginMessage = function(plugin, data) {
             if (plugin == 'gcode_ripper' && data.type == 'grbl_state') {
                 self.zPos(Number.parseFloat(data.z).toFixed(2));
-                self.calc_diameter() = (Number.parseFloat(self.diameter()) + (self.zPos()*2));
+                self.calc_diameter = (Number.parseFloat(self.diameter()) + (self.zPos()*2));
                 //console.log(newDiam);
             }
         }        
