@@ -1001,12 +1001,13 @@ class G_Code_Rip:
                 
                 if mvtype == 1:
                     if split_moves:
-                        xy_move_dist = sqrt((pos_last[0] - pos[0]) ** 2 + (pos_last[1] - pos[1]) ** 2)
+                        xyz_move_dist = sqrt((pos_last[0] - pos[0]) ** 2 + (pos_last[1] - pos[1]) ** 2 + (pos_last[2] - pos[2]) ** 2)
                         #print(f"xy move distance is {xy_move_dist}")
-                        if xy_move_dist > min_seg_length:
-                            segments = floor(xy_move_dist / min_seg_length) + 1
+                        if xyz_move_dist > min_seg_length:
+                            segments = floor(xyz_move_dist / min_seg_length) + 1
                             x_segment_length = (pos[0] - pos_last[0]) / segments
                             y_segment_length = (pos[1] - pos_last[1]) / segments
+                            z_segment_length = (pos[2] - pos_last[2]) /segments
                             #print(f"X segment {x_segment_length} Y segment {y_segment_length}")
                             newmove = []
                             oldmove = pos_last[:]
@@ -1014,9 +1015,10 @@ class G_Code_Rip:
                             for i in range(1, segments + 1):
                                 newX = float("{:.3f}".format(pos_last[0] + (x_segment_length * i)))
                                 newY = float("{:.3f}".format(pos_last[1] + (y_segment_length * i)))
+                                newZ = float("{:.3f}".format(pos_last[2] + (z_segment_length * i)))
                                 #print(f"New X and Y: {newX} {newY}")
-                                newmove.append([mvtype,oldmove,[newX, newY, pos[2]],feed,power])
-                                oldmove = [newX, newY, pos[2]]
+                                newmove.append([mvtype,oldmove,[newX, newY, newZ],feed,power])
+                                oldmove = [newX, newY, newZ]
                                 #print(oldmove)
                             out.extend(newmove)
                         else:
