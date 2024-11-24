@@ -73,6 +73,13 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
             if file.endswith('.gcode'):
                 self.template_gcode.append(file)
 
+    def generate_name(self):
+        #abbreviate origin
+        ori = self.origin[0].upper()
+        wrapdiam = self.start_diameter + 2*(self.currentZ)
+        output_name = f"D{int(wrapdiam)}_R{int(self.rotation)}_Ori{ori}_"
+        return output_name
+    
     def generate_gcode(self):
         gcr = G_Code_Rip.G_Code_Rip()
         gcode_file = self.selected_file
@@ -80,7 +87,7 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
         self.mapping = "Y2A"
         polar = False
         wrapdiam = self.start_diameter + 2*(self.currentZ)
-        output_name = "D{0}_R{1}_".format(int(wrapdiam), int(self.rotation))
+        output_name = self.generate_name()
         output_path = output_name+self.template_name
         path_on_disk = "{}/{}".format(self._settings.getBaseFolder("watched"), output_path)
         sf = self.scalefactor
