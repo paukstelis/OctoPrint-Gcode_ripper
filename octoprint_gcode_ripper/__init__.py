@@ -98,15 +98,6 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
             x_zero = maxx
             y_zero = midy
             
-        #Refactor for polar coordinate case
-        if self.start_diameter < maxx:
-            output_name = "POLAR_R{0}_".format(int(self.rotation))
-            output_path = output_name+self.template_name
-            path_on_disk = "{}/{}".format(self._settings.getBaseFolder("watched"), output_path)
-            self.mapping = "Polar"
-            polar = True
-            wrapdiam=0.5
-
         temp = gcr.scale_translate(temp,translate=[x_zero,y_zero,0.0])
         gcr.scaled_trans = temp
         minx = minx - x_zero
