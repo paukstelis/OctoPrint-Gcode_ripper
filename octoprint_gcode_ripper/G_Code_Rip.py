@@ -1528,6 +1528,7 @@ class G_Code_Rip:
                       Wrap="XYZ",
                       preamble="",
                       postamble="",
+                      chord=False,
                       gen_rapids=False,
                       PLACES_L=4,
                       PLACES_R=3,
@@ -1617,13 +1618,18 @@ class G_Code_Rip:
                 if Wrap == "Y2A" or Wrap == "Y2B":
                     #if line[1][1].imag == 0:
                     if (not isinstance(line[1][1], complex)):
-                        #coordA[1]=sign*degrees(line[1][1]/Rstock)
-                        #Testing chord as length
-                        coordA[1]=sign*degrees(2*asin(line[1][1]/(2*Rstock)))
+                        #Use chord length
+                        if chord:
+                            coordA[1]=sign*degrees(2*asin(line[1][1]/(2*Rstock)))
+                        else:
+                            coordA[1]=sign*degrees(line[1][1]/Rstock)
                     #if line[2][1].imag == 0:
                     if (not isinstance(line[2][1], complex)):
-                        #coordB[1]=sign*degrees(line[2][1]/Rstock)
-                        coordB[1]=sign*degrees(2*asin(line[2][1]/(2*Rstock)))
+                        #Use chord length
+                        if chord:
+                            coordB[1]=sign*degrees(2*asin(line[2][1]/(2*Rstock)))
+                        else:
+                            coordB[1]=sign*degrees(line[2][1]/Rstock)
                 elif Wrap == "X2B" or Wrap == "X2A":
                     #if line[1][0].imag == 0:
                     if (not isinstance(line[1][0], complex)):

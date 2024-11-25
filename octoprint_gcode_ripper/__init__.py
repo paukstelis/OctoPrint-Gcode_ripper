@@ -29,6 +29,7 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
         self.scalefactor = float(1)
         self.origin = "center"
         self.mapping = "Y2A"
+        self.chord = False
         self.split_moves = True
         self.min_seg = 1.0
         self.datafolder = None
@@ -106,13 +107,13 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
             y_zero = midy
             
         #Refactor for polar coordinate case
-        if self.start_diameter < maxx:
-            output_name = "POLAR_R{0}_".format(int(self.rotation))
-            output_path = output_name+self.template_name
-            path_on_disk = "{}/{}".format(self._settings.getBaseFolder("watched"), output_path)
-            self.mapping = "Polar"
-            polar = True
-            wrapdiam=0.5
+        #if self.start_diameter < maxx:
+        #    output_name = "POLAR_R{0}_".format(int(self.rotation))
+        #    output_path = output_name+self.template_name
+        #    path_on_disk = "{}/{}".format(self._settings.getBaseFolder("watched"), output_path)
+        #    self.mapping = "Polar"
+        #    polar = True
+        #    wrapdiam=0.5
 
         temp = gcr.scale_translate(temp,translate=[x_zero,y_zero,0.0])
         gcr.scaled_trans = temp
@@ -130,7 +131,14 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
             pre = pre + "DOMODA\nMAXARC {0:.3f}".format(maxarc)
 
         with open(path_on_disk,"w") as newfile:
-            for line in gcr.generategcode(temp, Rstock=wrapdiam/2, no_variables=True, Wrap=self.mapping, preamble=pre, postamble="STOPBANGLE", FSCALE="None"):
+            for line in gcr.generategcode(temp, 
+                                          Rstock=wrapdiam/2, 
+                                          no_variables=True, 
+                                          Wrap=self.mapping, 
+                                          preamble=pre, 
+                                          chord=self.chord, 
+                                          postamble="STOPBANGLE", 
+                                          FSCALE="None"):
                 newfile.write(f"\n{line}")
     
     def update_image(self):
@@ -151,6 +159,7 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
             self.start_diameter = float(data["diameter"])
             self.rotation = float(data["rotationAngle"])
             self.modifyA = bool(data["modifyA"])
+            self.chord = bool(data["chord"])
             self.scalefactor = float(data["scalefactor"])
             self.origin = data["origin"]
             self.mapping = "Y2A"

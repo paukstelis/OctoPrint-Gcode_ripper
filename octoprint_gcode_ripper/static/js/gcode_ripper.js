@@ -13,6 +13,7 @@ $(function() {
         self.rotationAngle = ko.observable(0);
         self.scaleFactor = ko.observable(1.0);
         self.modifyA = ko.observable(1);
+        self.chord = ko.observable(1);
         self.split_moves = ko.observable(1);
         self.min_seg_length = ko.observable(1.0);
         self.origin = ko.observable("center");
@@ -123,6 +124,7 @@ $(function() {
                 filename: self.selectedGCodeFile,
                 rotationAngle: self.rotationAngle(),
                 modifyA: self.modifyA(),
+                chord: self.chord(),
                 scalefactor: self.scaleFactor(),
                 split_moves: self.split_moves(),
                 min_seg: self.min_seg_length(),
