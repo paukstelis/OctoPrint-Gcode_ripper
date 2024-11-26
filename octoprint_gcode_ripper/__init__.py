@@ -29,6 +29,7 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
         self.scalefactor = float(1)
         self.origin = "center"
         self.mapping = "Y2A"
+        self.chord = False
         self.split_moves = True
         self.min_seg = 1.0
         self.datafolder = None
@@ -73,6 +74,13 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
             if file.endswith('.gcode'):
                 self.template_gcode.append(file)
 
+    def generate_name(self):
+        #abbreviate origin
+        ori = self.origin[0].upper()
+        wrapdiam = self.start_diameter + 2*(self.currentZ)
+        output_name = f"D{int(wrapdiam)}_R{int(self.rotation)}_Ori{ori}_"
+        return output_name
+    
     def generate_gcode(self):
         gcr = G_Code_Rip.G_Code_Rip()
         gcode_file = self.selected_file
@@ -80,7 +88,7 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
         self.mapping = "Y2A"
         polar = False
         wrapdiam = self.start_diameter + 2*(self.currentZ)
-        output_name = "D{0}_R{1}_".format(int(wrapdiam), int(self.rotation))
+        output_name = self.generate_name()
         output_path = output_name+self.template_name
         path_on_disk = "{}/{}".format(self._settings.getBaseFolder("watched"), output_path)
         sf = self.scalefactor
@@ -99,13 +107,13 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
             y_zero = midy
             
         #Refactor for polar coordinate case
-        if self.start_diameter < maxx:
-            output_name = "POLAR_R{0}_".format(int(self.rotation))
-            output_path = output_name+self.template_name
-            path_on_disk = "{}/{}".format(self._settings.getBaseFolder("watched"), output_path)
-            self.mapping = "Polar"
-            polar = True
-            wrapdiam=0.5
+        #if self.start_diameter < maxx:
+        #    output_name = "POLAR_R{0}_".format(int(self.rotation))
+        #    output_path = output_name+self.template_name
+        #    path_on_disk = "{}/{}".format(self._settings.getBaseFolder("watched"), output_path)
+        #    self.mapping = "Polar"
+        #    polar = True
+        #    wrapdiam=0.5
 
         temp = gcr.scale_translate(temp,translate=[x_zero,y_zero,0.0])
         gcr.scaled_trans = temp
@@ -123,7 +131,14 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
             pre = pre + "DOMODA\nMAXARC {0:.3f}".format(maxarc)
 
         with open(path_on_disk,"w") as newfile:
-            for line in gcr.generategcode(temp, Rstock=wrapdiam/2, no_variables=True, Wrap=self.mapping, preamble=pre, postamble="STOPBANGLE", FSCALE="None"):
+            for line in gcr.generategcode(temp, 
+                                          Rstock=wrapdiam/2, 
+                                          no_variables=True, 
+                                          Wrap=self.mapping, 
+                                          preamble=pre, 
+                                          chord=self.chord, 
+                                          postamble="STOPBANGLE", 
+                                          FSCALE="None"):
                 newfile.write(f"\n{line}")
     
     def update_image(self):
@@ -144,6 +159,7 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
             self.start_diameter = float(data["diameter"])
             self.rotation = float(data["rotationAngle"])
             self.modifyA = bool(data["modifyA"])
+            self.chord = bool(data["chord"])
             self.scalefactor = float(data["scalefactor"])
             self.origin = data["origin"]
             self.mapping = "Y2A"
