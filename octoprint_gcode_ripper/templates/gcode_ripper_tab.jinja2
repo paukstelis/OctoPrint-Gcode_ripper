@@ -28,39 +28,36 @@
             </div>
             
         </div>
-        <div class="row" style="padding-left: 20px; padding-bottom: 10px;">
-            <div class="accordian-group" id="extra_options">
-                <div class="accordian-heading">
-                    <a class="accordian-toggle" data-toggle="collapse" href="#extra_options_collapse">Extra options</a>
-                </div>
-                <div id="extra_options_collapse" class="accordian-body collapse">
-                    <div class="span12">
+        <div class="row" style="padding-left: 30px; padding-bottom: 10px;">
+
+                <div id="extra_options">
+                    <div>
                         <label for="modifyA_input">Flat pockets:
-                        <i class="icon icon-info-sign" title="Extra Z-depth at cut origin. Uncheck for objects that are not simple pockets." data-toggle="tooltip"></i>
+                        <i class="icon icon-info-sign" title="Extra Z-depth at cut origin. Uncheck for objects that are not simple pockets. Must also be on when cutting near-polar coordinates (B~=+/-90)" data-toggle="tooltip"></i>
                         <input id="modifyA_input" type="checkbox" checked data-bind="checked: modifyA">
                         </label>
                     </div>
-                    <div class="span12">
+                    <div>
                         <label for="chord_input">Use chord length:
-                        <i class="icon icon-info-sign" title="Calculates A axis values as the chord length, rather than arc length" data-toggle="tooltip"></i>
+                        <i class="icon icon-info-sign" title="Calculates A axis values as the chord length, rather than arc length. Increases A rotations slightly." data-toggle="tooltip"></i>
                         <input id="chord_input" type="checkbox" checked data-bind="checked: chord">
                         </label>
                     </div>
-                    <div class="span12">
+                    <div>
                         <label for="split_input">Split moves:
-                        <i class="icon icon-info-sign" title="Split moves into smaller moves defined by minimum segment length. Need for flat pockets and some other features." data-toggle="tooltip"></i>
+                        <i class="icon icon-info-sign" title="Split moves into smaller moves defined by minimum segment length. Needed for flat pockets and near-polar coordinate cutting." data-toggle="tooltip"></i>
                         <input id="split_input" type="checkbox" checked data-bind="checked: split_moves">
                         </label>
                     </div>
  
-                    <div class="span12">
+                    <div>
                         <label for="min_seg_input">Minimum segment length (mm):
-                        <input id="min_seg_input" type="number" value="1" step="any" data-bind="value: min_seg_length">
+                        <input id="min_seg_input" type="number" min="0.1" value="1" step="0.1" data-bind="value: min_seg_length">
                         </label>
                     </div>
-                    <div class="span12">
+                    <div>
                         <label for="origin_sel">Origin:
-                        <select class="span4" id="origin_sel" name="origin_sel" data-bind="value: origin">
+                        <select id="origin_sel" name="origin_sel" data-bind="value: origin">
                             <option value="center">Center</option>
                             <option value="left">Left</option>
                             <option value="right">Right</option>
@@ -68,8 +65,6 @@
                         </label>
                     </div>
                 </div>
-
-            </div>
         </div>
         <hr>
         <div>
