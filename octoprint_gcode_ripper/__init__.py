@@ -105,7 +105,10 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
         if self.origin == "right":
             x_zero = maxx
             y_zero = midy
-            
+        #chord check, revisit what values need to be checked
+        if wrapdiam < math.sqrt(miny**2 + maxy**2):
+            self.chord = False
+            self._logger.info("Failed chord check, defaulting to diameter")
         #Refactor for polar coordinate case
         #if self.start_diameter < maxx:
         #    output_name = "POLAR_R{0}_".format(int(self.rotation))
@@ -125,6 +128,7 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
             mina = math.degrees(miny/(wrapdiam/2))
             maxa = math.degrees(maxy/(wrapdiam/2))
             maxarc = (abs(mina) + abs(maxa))
+
         pre = "RTCM\nDOBANGLE\nDIAM {0}\n".format(wrapdiam)
 
         if self.modifyA and not polar:
