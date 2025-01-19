@@ -23,6 +23,7 @@ $(function() {
         self.newimage = ko.observable("");
         self.thumbnail_url = ko.observable('/static/img/tentacle-20x20.png');
         self.zPos = ko.observable("");
+        self.zrelative = ko.observable(0);
         
 
         tab = document.getElementById("tab_plugin_gcode_ripper_link");
@@ -129,6 +130,7 @@ $(function() {
                 split_moves: self.split_moves(),
                 min_seg: self.min_seg_length(),
                 origin: self.origin(),
+                zrelative: self.zrelative()
             };
 
             OctoPrint.simpleApiCommand("gcode_ripper", "write_gcode", data)
@@ -197,7 +199,12 @@ $(function() {
         self.onDataUpdaterPluginMessage = function(plugin, data) {
             if (plugin == 'gcode_ripper' && data.type == 'grbl_state') {
                 self.zPos(Number.parseFloat(data.z).toFixed(2));
-                self.calc_diameter = (Number.parseFloat(self.diameter()) + (self.zPos()*2));
+
+                if (self.zrelative) {
+                    self.calc_diameter = (Number.parseFloat(self.diameter()) + (self.zPos()*2));
+                } else {
+                    self.calc_diameter = self.diameter;
+                }
                 //console.log(newDiam);
             }
         }        

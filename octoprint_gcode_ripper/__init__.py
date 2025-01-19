@@ -34,6 +34,7 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
         self.min_seg = 1.0
         self.datafolder = None
         self.template_name = None
+        self.zrelative = False
         #self.watched_path = self._settings.global_get_basefolder("watched")
     ##~~ SettingsPlugin mixin
     def initialize(self):
@@ -77,7 +78,7 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
     def generate_name(self):
         #abbreviate origin
         ori = self.origin[0].upper()
-        wrapdiam = self.start_diameter + 2*(self.currentZ)
+        wrapdiam = self.calc_diameter()
         output_name = f"D{int(wrapdiam)}_R{int(self.rotation)}_Ori{ori}_"
         return output_name
     
@@ -87,7 +88,7 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
         gcr.Read_G_Code("{}/{}".format(self._settings.getBaseFolder("uploads"), gcode_file), XYarc2line=True, units="mm")
         self.mapping = "Y2A"
         polar = False
-        wrapdiam = self.start_diameter + 2*(self.currentZ)
+        wrapdiam = self.calc_diameter()
         output_name = self.generate_name()
         output_path = output_name+self.template_name
         path_on_disk = "{}/{}".format(self._settings.getBaseFolder("watched"), output_path)
@@ -145,6 +146,12 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
                                           FSCALE="None"):
                 newfile.write(f"\n{line}")
     
+    def calc_diameter(self):
+        if self.zrelative:
+            return self.start_diameter + 2*(self.currentZ)
+        else:
+            return self.start_diameter
+        
     def update_image(self):
         self._file_manager.set_additional_metadata("local",self.selected_file,"bgs_imgurl",self.selected_image,overwrite=True)
 
@@ -169,6 +176,7 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
             self.mapping = "Y2A"
             self.split_moves = bool(data["split_moves"])
             self.min_seg = float(data["min_seg"])
+            self.zrelative = bool(data["zrelative"])
             self.generate_gcode()
 
         if command == "editmeta":

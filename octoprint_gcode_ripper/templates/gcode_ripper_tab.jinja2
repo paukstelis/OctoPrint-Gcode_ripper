@@ -18,6 +18,13 @@
                     <input id="scale_factor_input" type="number" value="1" step="any" class="span4" data-bind="value: scaleFactor">
             </div>
 
+            <div class="row">
+                <label for="zrelative">Reference Diam.
+                <i class="icon icon-info-sign" title="When checked, the input diameter is a reference diameter at Z=0. The current work position Z value is added to this value to calculate the diameter." data-toggle="tooltip"></i>
+                <input id="zrelative" type="checkbox" unchecked data-bind="checked: zrelative">
+                </label>
+            </div>
+
             <div class="row" style="padding-left: 20px; padding-bottom: 10px;">
                 <div class="span12">
                     <label for="gcode_file_select">Select GCode File:</label>

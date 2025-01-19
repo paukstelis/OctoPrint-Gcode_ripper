@@ -1613,8 +1613,8 @@ class G_Code_Rip:
                 D2 = line[2][2]-line[1][2]
                 D012 = sqrt((D0+0j).real**2+(D1+0j).real**2+(D2+0j).real**2)
                 
-                coordA=[ line[1][0], line[1][1], line[1][2] ]
-                coordB=[ line[2][0], line[2][1], line[2][2] ]
+                coordA=[ line[1][0], line[1][1], line[1][2] ] #this is previous
+                coordB=[ line[2][0], line[2][1], line[2][2] ] #this is current
                 if Wrap == "Y2A" or Wrap == "Y2B":
                     #if line[1][1].imag == 0:
                     if (not isinstance(line[1][1], complex)):
@@ -1630,6 +1630,7 @@ class G_Code_Rip:
                             coordB[1]=sign*degrees(2*asin(line[2][1]/(2*Rstock)))
                         else:
                             coordB[1]=sign*degrees(line[2][1]/Rstock)
+                    
                 elif Wrap == "X2B" or Wrap == "X2A":
                     #if line[1][0].imag == 0:
                     if (not isinstance(line[1][0], complex)):
