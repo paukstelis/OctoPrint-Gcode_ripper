@@ -945,7 +945,6 @@ class G_Code_Rip:
         L = 0
         R = 1
         flag_side = 1  
-
         for line in code2scale:
             if line[0] == 0  or line[0] == 1:
                 mvtype   = line[0]

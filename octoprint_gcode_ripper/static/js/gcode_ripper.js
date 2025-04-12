@@ -11,7 +11,8 @@ $(function() {
         self.diameter = ko.observable(0);
         self.calc_diameter = ko.observable(0);
         self.rotationAngle = ko.observable(0);
-        self.scaleFactor = ko.observable(1.0);
+        self.XscaleFactor = ko.observable(1.0);
+        self.AscaleFactor = ko.observable(1.0);
         self.modifyA = ko.observable(1);
         self.chord = ko.observable(1);
         self.split_moves = ko.observable(1);
@@ -126,7 +127,8 @@ $(function() {
                 rotationAngle: self.rotationAngle(),
                 modifyA: self.modifyA(),
                 chord: self.chord(),
-                scalefactor: self.scaleFactor(),
+                xscalefactor: self.XscaleFactor(),
+                ascalefactor: self.AscaleFactor(),
                 split_moves: self.split_moves(),
                 min_seg: self.min_seg_length(),
                 origin: self.origin(),

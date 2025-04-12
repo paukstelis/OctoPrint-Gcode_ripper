@@ -26,7 +26,8 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
         self.current_diameter = float(0)
         self.rotation = float(0)
         self.modifyA = False
-        self.scalefactor = float(1)
+        self.xscalefactor = float(1)
+        self.ascalefactor = float(1)
         self.origin = "center"
         self.mapping = "Y2A"
         self.chord = False
@@ -92,8 +93,10 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
         output_name = self.generate_name()
         output_path = output_name+self.template_name
         path_on_disk = "{}/{}".format(self._settings.getBaseFolder("watched"), output_path)
-        sf = self.scalefactor
-        temp,minx,maxx,miny,maxy,minz,maxz  = gcr.scale_rotate_code(gcr.g_code_data,[sf,sf,1,1],self.rotation,split_moves=self.split_moves,min_seg_length=self.min_seg)
+        xsf = self.xscalefactor
+        asf = self.ascalefactor
+        #self._logger.info(gcr.g_code_data[0])
+        temp,minx,maxx,miny,maxy,minz,maxz  = gcr.scale_rotate_code(gcr.g_code_data,[xsf,asf,1,1],self.rotation,split_moves=self.split_moves,min_seg_length=self.min_seg)
         midx = (minx+maxx)/2
         midy = (miny+maxy)/2
         #determine origin position
@@ -110,14 +113,6 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
         if wrapdiam < math.sqrt(miny**2 + maxy**2):
             self.chord = False
             self._logger.info("Failed chord check, defaulting to diameter")
-        #Refactor for polar coordinate case
-        #if self.start_diameter < maxx:
-        #    output_name = "POLAR_R{0}_".format(int(self.rotation))
-        #    output_path = output_name+self.template_name
-        #    path_on_disk = "{}/{}".format(self._settings.getBaseFolder("watched"), output_path)
-        #    self.mapping = "Polar"
-        #    polar = True
-        #    wrapdiam=0.5
 
         temp = gcr.scale_translate(temp,translate=[x_zero,y_zero,0.0])
         gcr.scaled_trans = temp
@@ -131,6 +126,9 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
             maxarc = (abs(mina) + abs(maxa))
 
         pre = "RTCM\nDOBANGLE\nDIAM {0}\n".format(wrapdiam)
+
+        if self.origin == "left":
+            pre = pre + "ORIGIN LEFT\n"
 
         if self.modifyA and not polar:
             pre = pre + "DOMODA\nMAXARC {0:.3f}".format(maxarc)
@@ -171,7 +169,8 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
             self.rotation = float(data["rotationAngle"])
             self.modifyA = bool(data["modifyA"])
             self.chord = bool(data["chord"])
-            self.scalefactor = float(data["scalefactor"])
+            self.xscalefactor = float(data["xscalefactor"])
+            self.ascalefactor = float(data["ascalefactor"])
             self.origin = data["origin"]
             self.mapping = "Y2A"
             self.split_moves = bool(data["split_moves"])
