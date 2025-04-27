@@ -8,6 +8,7 @@ import octoprint.util
 import re
 import os
 import math
+import shutil
 from . import G_Code_Rip as G_Code_Rip
 
 class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
@@ -39,7 +40,20 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
         #self.watched_path = self._settings.global_get_basefolder("watched")
     ##~~ SettingsPlugin mixin
     def initialize(self):
-        self.datafolder = self.get_plugin_data_folder()
+        storage = self._file_manager._storage("local")
+        if storage.folder_exists("templates"):
+            self._logger.info("Scans exists")
+        else:
+            storage.add_folder("templates")
+            templates_folder = os.path.join(self._settings.getBaseFolder("uploads"), "templates")
+            source_folder = os.path.join(self._basefolder, "static", "gcode")
+            if os.path.exists(source_folder):
+                for file_name in os.listdir(source_folder):
+                    if file_name.endswith(".gcode"):
+                        source_file = os.path.join(source_folder, file_name)
+                        destination_file = os.path.join(templates_folder, file_name)
+                        shutil.copy(source_file, destination_file)
+                        self._logger.info(f"Copied {file_name} to templates folder")
 
     #integrated directly from upload anything plugin by 
     @property
