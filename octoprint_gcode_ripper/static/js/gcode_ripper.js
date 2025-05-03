@@ -16,6 +16,7 @@ $(function() {
         self.modifyA = ko.observable(1);
         self.chord = ko.observable(1);
         self.split_moves = ko.observable(1);
+        self.single_object = ko.observable(1);
         self.min_seg_length = ko.observable(1.0);
         self.origin = ko.observable("center");
         self.gcodeFiles = ko.observableArray();
@@ -130,6 +131,7 @@ $(function() {
                 xscalefactor: self.XscaleFactor(),
                 ascalefactor: self.AscaleFactor(),
                 split_moves: self.split_moves(),
+                single_object : self.single_object(),
                 min_seg: self.min_seg_length(),
                 origin: self.origin(),
                 zrelative: self.zrelative()

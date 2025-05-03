@@ -22,7 +22,7 @@
                     <input id="ascale_factor_input" type="number" value="1" step="any" class="span4" data-bind="value: AscaleFactor">
             </div>
 
-            <div class="row">
+            <div class="row" style="padding-left: 20px; padding-bottom: 10px;>
                 <label for="zrelative">Reference Diam.
                 <i class="icon icon-info-sign" title="When checked, the input diameter is a reference diameter at Z=0. The current work position Z value is added to this value to calculate the diameter." data-toggle="tooltip"></i>
                 <input id="zrelative" type="checkbox" unchecked data-bind="checked: zrelative">
@@ -60,7 +60,12 @@
                         <input id="split_input" type="checkbox" checked data-bind="checked: split_moves">
                         </label>
                     </div>
- 
+                    <div>
+                        <label for="single_object">Single object:
+                        <i class="icon icon-info-sign" title="Single object with center origin (pewa). Impacts depth-of-cut at A=0. Uncheck for continuous rim designs." data-toggle="tooltip"></i>
+                        <input id="single_object" type="checkbox" checked data-bind="checked: single_object">
+                        </label>
+                    </div>
                     <div>
                         <label for="min_seg_input">Minimum segment length (mm):
                         <input id="min_seg_input" type="number" min="0.1" value="1" step="0.1" data-bind="value: min_seg_length">

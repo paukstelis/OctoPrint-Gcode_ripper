@@ -147,6 +147,8 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
         if self.modifyA and not polar:
             pre = pre + "DOMODA\nMAXARC {0:.3f}".format(maxarc)
 
+        if self.single_object:
+            pre = pre + "\nSINGLEOBJECT\n"
         with open(path_on_disk,"w") as newfile:
             for line in gcr.generategcode(temp, 
                                           Rstock=wrapdiam/2, 
@@ -190,6 +192,7 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
             self.split_moves = bool(data["split_moves"])
             self.min_seg = float(data["min_seg"])
             self.zrelative = bool(data["zrelative"])
+            self.single_object = bool(data["single_object"])
             self.generate_gcode()
 
         if command == "editmeta":
