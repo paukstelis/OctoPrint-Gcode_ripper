@@ -1,102 +1,103 @@
 <!-- gcode_ripper_tab.jinja2 -->
 
     <div id="gcode_ripper_plugin_collapse" class="row-fluid">
-        <div class="row" style="padding-left: 10px;">
-            
-            <div class="span3">
-                <label for="diameter_input">Starting Diameter:</label>
-                <input id="diameter_input" type="number" step="any" class="span5" data-bind="value: diameter">
-            </div>
-            
-            <div class="span3">
-                    <label for="rotation_angle_input">Rotation Angle:</label>
-                    <input id="rotation_angle_input" type="number" step="any" class="span5" data-bind="value: rotationAngle">
-            </div>
-            
-            <div class="span3">
-                    <label for="xscale_factor_input">X-Scale Factor:</label>
-                    <input id="xscale_factor_input" type="number" value="1" step="any" class="span4" data-bind="value: XscaleFactor">
-            </div>
-            <div class="span3">
-                    <label for="ascale_factor_input">A-Scale Factor:</label>
-                    <input id="ascale_factor_input" type="number" value="1" step="any" class="span4" data-bind="value: AscaleFactor">
-            </div>
-
-            <div class="row">
-                <label for="zrelative">Reference Diam.
-                <i class="icon icon-info-sign" title="When checked, the input diameter is a reference diameter at Z=0. The current work position Z value is added to this value to calculate the diameter." data-toggle="tooltip"></i>
-                <input id="zrelative" type="checkbox" unchecked data-bind="checked: zrelative">
+        <div class="gcode-ripper-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding-left: 10px;">
+            <div>
+                <label for="diameter_input">Starting Diameter:
+                    <i class="icon icon-info-sign" title="Diameter at the cut origin." data-toggle="tooltip"></i>
+                    <input id="diameter_input" type="number" step="any" data-bind="value: diameter" style="width: 50%;">
                 </label>
             </div>
+            <div>
+                <label for="rotation_angle_input">Rotation Angle:
+                <i class="icon icon-info-sign" title="Degrees of rotation." data-toggle="tooltip"></i>
+                <br><input id="rotation_angle_input" type="number" step="any" data-bind="value: rotationAngle" style="width: 50%;">
+                </label>
+            </div>
+            <div>
+                <label for="xscale_factor_input">X-Scale Factor:
+                <i class="icon icon-info-sign" title="Fractional scaling in the X dimension" data-toggle="tooltip"></i>
+                <br><input id="xscale_factor_input" type="number" value="1" step="any" data-bind="value: XscaleFactor" style="width: 50%;">
+                </label>
+            </div>
+            <div>
+                <label for="ascale_factor_input">A-Scale Factor:
+                <i class="icon icon-info-sign" title="Fractional scaling in the A (Y) dimension." data-toggle="tooltip"></i>
+                <br><input id="ascale_factor_input" type="number" value="1" step="any" data-bind="value: AscaleFactor" style="width: 50%;">
+                </label>
+            </div>
+            <div>
+                <label for="min_seg_input">Minimum segment length (mm):
+                <i class="icon icon-info-sign" title="Motions will be broken up into (linear) moves with a maximum of this size. Only considered with Split Moves checked." data-toggle="tooltip"></i>
+                    <input id="min_seg_input" type="number" min="0.1" value="1" step="0.1" data-bind="value: min_seg_length" style="width: 50%;">
+                </label>
+            </div>
+            <div>
+                <label for="zrelative">Reference Diam.
+                    <i class="icon icon-info-sign" title="When checked, the input diameter is a reference diameter at Z=0. The current work position Z value is added to this value to calculate the diameter." data-toggle="tooltip"></i>
+                    <br><input id="zrelative" type="checkbox" unchecked data-bind="checked: zrelative" style="margin-left: 8px;">
+                </label>
+            </div>
+        </div>
 
-            <div class="row" style="padding-left: 20px; padding-bottom: 10px;">
-                <div class="span12">
-                    <label for="gcode_file_select">Select GCode File:</label>
-                    <select id="gcode_file_select">
-                        <option value="">Loading...</option>
+        <div class="row" style="padding-left: 20px; padding-bottom: 10px;">
+            <div class="span12">
+                <label for="gcode_file_select">Select GCode File:</label>
+                <select id="gcode_file_select">
+                    <option value="">Loading...</option>
+                </select>
+            </div>
+        </div>
+            
+        <div class="row" style="padding-left: 30px; padding-bottom: 10px;">
+            <div id="extra_options">
+                <div>
+                    <label for="modifyA_input">Flat pockets:
+                    <i class="icon icon-info-sign" title="Extra Z-depth at cut origin. Uncheck for objects that are not simple pockets. Must also be on when cutting near-polar coordinates (B~=+/-90)" data-toggle="tooltip"></i>
+                    <input id="modifyA_input" type="checkbox" checked data-bind="checked: modifyA">
+                    </label>
+                </div>
+                <div>
+                    <label for="chord_input">Use chord length:
+                    <i class="icon icon-info-sign" title="Calculates A axis values as the chord length, rather than arc length. Increases A rotations slightly." data-toggle="tooltip"></i>
+                    <input id="chord_input" type="checkbox" checked data-bind="checked: chord">
+                    </label>
+                </div>
+                <div>
+                    <label for="split_input">Split moves:
+                    <i class="icon icon-info-sign" title="Split moves into smaller moves defined by minimum segment length. Needed for flat pockets and near-polar coordinate cutting." data-toggle="tooltip"></i>
+                    <input id="split_input" type="checkbox" checked data-bind="checked: split_moves">
+                    </label>
+                </div>
+                <div>
+                    <label for="origin_sel">Origin:
+                    <select id="origin_sel" name="origin_sel" data-bind="value: origin">
+                        <option value="center">Center</option>
+                        <option value="left">Left</option>
+                        <option value="right">Right</option>
                     </select>
+                    </label>
                 </div>
             </div>
-            
-        </div>
-        <div class="row" style="padding-left: 30px; padding-bottom: 10px;">
-
-                <div id="extra_options">
-                    <div>
-                        <label for="modifyA_input">Flat pockets:
-                        <i class="icon icon-info-sign" title="Extra Z-depth at cut origin. Uncheck for objects that are not simple pockets. Must also be on when cutting near-polar coordinates (B~=+/-90)" data-toggle="tooltip"></i>
-                        <input id="modifyA_input" type="checkbox" checked data-bind="checked: modifyA">
-                        </label>
-                    </div>
-                    <div>
-                        <label for="chord_input">Use chord length:
-                        <i class="icon icon-info-sign" title="Calculates A axis values as the chord length, rather than arc length. Increases A rotations slightly." data-toggle="tooltip"></i>
-                        <input id="chord_input" type="checkbox" checked data-bind="checked: chord">
-                        </label>
-                    </div>
-                    <div>
-                        <label for="split_input">Split moves:
-                        <i class="icon icon-info-sign" title="Split moves into smaller moves defined by minimum segment length. Needed for flat pockets and near-polar coordinate cutting." data-toggle="tooltip"></i>
-                        <input id="split_input" type="checkbox" checked data-bind="checked: split_moves">
-                        </label>
-                    </div>
- 
-                    <div>
-                        <label for="min_seg_input">Minimum segment length (mm):
-                        <input id="min_seg_input" type="number" min="0.1" value="1" step="0.1" data-bind="value: min_seg_length">
-                        </label>
-                    </div>
-                    <div>
-                        <label for="origin_sel">Origin:
-                        <select id="origin_sel" name="origin_sel" data-bind="value: origin">
-                            <option value="center">Center</option>
-                            <option value="left">Left</option>
-                            <option value="right">Right</option>
-                        </select>
-                        </label>
-                    </div>
-                </div>
         </div>
         <hr>
         <div>
-                <img id="file_image" src="" width="100%">
+            <img id="file_image" src="" width="100%">
         </div>
         <hr>
         <div class="row">
-                <div class="span3" style="padding-left: 10px;">
-                    <button id="write_gcode_button" class="btn btn-primary" data-bind="click: writeGCode">Write Gcode</button>
-                </div>
+            <div class="span3" style="padding-left: 10px;">
+                <button id="write_gcode_button" class="btn btn-primary" data-bind="click: writeGCode">Write Gcode</button>
+            </div>
 
-                <div class="span3" style="padding-left: 10px;">
-                    <button id="refresh_gcode_button" class="btn btn-primary" data-bind="click: updateFiles">Refresh Files</button>
-                </div>
-                
-                <div class="span3" style="padding-left: 10px;">
-                    <button id="edit_meta_button" class="btn btn-primary" data-bind="click: show_meta_overlay">Edit MetaData</button>
-                </div>
+            <div class="span3" style="padding-left: 10px;">
+                <button id="refresh_gcode_button" class="btn btn-primary" data-bind="click: updateFiles">Refresh Files</button>
+            </div>
+            
+            <div class="span3" style="padding-left: 10px;">
+                <button id="edit_meta_button" class="btn btn-primary" data-bind="click: show_meta_overlay">Edit MetaData</button>
+            </div>
         </div>
-
-
     </div>
     <div id="edit_meta_overlay" class="modal hide fade">
         <div class="modal-header">
