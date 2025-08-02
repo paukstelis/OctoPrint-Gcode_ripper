@@ -166,7 +166,10 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
         
     def update_image(self):
         self._file_manager.set_additional_metadata("local",self.selected_file,"bgs_imgurl",self.selected_image,overwrite=True)
-
+    
+    def is_api_protected(self):
+        return True
+    
     def get_api_commands(self):
         return dict(
             write_gcode=[],
@@ -205,7 +208,6 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
     
     def process_grbl_status_msg(self, msg):
         #need to redefine much of this if we have more axes
-
         match = re.search(r'<(-?[^,]+)[,|][WM]Pos:(-?[\d\.]+),(-?[\d\.]+),(-?[\d\.]+),?(-?[\d\.]+)?,?(-?[\d\.]+)?', msg)
         self.currentZ = float(match.groups(1)[3])
         #print(self.currentZ)
