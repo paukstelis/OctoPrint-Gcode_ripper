@@ -15,7 +15,8 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
     octoprint.plugin.AssetPlugin,
     octoprint.plugin.StartupPlugin,
     octoprint.plugin.SimpleApiPlugin,
-    octoprint.plugin.TemplatePlugin
+    octoprint.plugin.TemplatePlugin,
+    octoprint.plugin.EventHandlerPlugin
 
 ):
          
@@ -40,6 +41,7 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
         #self.watched_path = self._settings.global_get_basefolder("watched")
     ##~~ SettingsPlugin mixin
     def initialize(self):
+        self._event_bus.subscribe("LATHEENGRAVER_SEND_POSITION", self.get_position)
         storage = self._file_manager._storage("local")
         if storage.folder_exists("templates"):
             self._logger.info("Scans exists")
@@ -81,6 +83,10 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
             "css": ["css/gcode_ripper.css"],
             "less": ["less/gcode_ripper.less"]
         }
+
+    def get_position(self, event, payload):
+        #self._logger.info(payload)
+        self.currentZ = payload["z"]
 
     ##~~ Softwareupdate hook
     def _get_templates(self):
@@ -176,6 +182,10 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
             editmeta=[]
         )
     
+    def on_event(self, event, payload):
+        if event == "plugin_latheengraver_send_position":
+            self.get_position(event, payload)
+
     def on_api_command(self, command, data):
         
         if command == "write_gcode":
@@ -199,18 +209,6 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
             self.selected_file = data["filename"]["path"]
             self.selected_image = data["imagefile"]
             self.update_image()
-
-    def hook_gcode_received(self, comm_instance, line, *args, **kwargs):
-        # look for a status message
-        if 'MPos' in line or 'WPos' in line:
-            self.process_grbl_status_msg(line)
-        return line
-    
-    def process_grbl_status_msg(self, msg):
-        #need to redefine much of this if we have more axes
-        match = re.search(r'<(-?[^,]+)[,|][WM]Pos:(-?[\d\.]+),(-?[\d\.]+),(-?[\d\.]+),?(-?[\d\.]+)?,?(-?[\d\.]+)?', msg)
-        self.currentZ = float(match.groups(1)[3])
-        #print(self.currentZ)
 
     def get_update_information(self):
         # Define the configuration for your plugin to use with the Software Update
@@ -251,6 +249,5 @@ def __plugin_load__():
     global __plugin_hooks__
     __plugin_hooks__ = {
         "octoprint.plugin.softwareupdate.check_config": __plugin_implementation__.get_update_information,
-        "octoprint.comm.protocol.gcode.received": __plugin_implementation__.hook_gcode_received,
         "octoprint.filemanager.extension_tree": __plugin_implementation__.get_extension_tree
     }
