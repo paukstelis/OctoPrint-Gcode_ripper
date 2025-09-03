@@ -163,6 +163,9 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
                                           postamble="STOPBANGLE", 
                                           FSCALE="None"):
                 newfile.write(f"\n{line}")
+
+        d = dict(title="Gcode Written",text="Gcode has been written and will appear in the file section shortly.",type="info")
+        self.send_le_message(d)
     
     def calc_diameter(self):
         if self.zrelative:
@@ -209,6 +212,19 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
             self.selected_file = data["filename"]["path"]
             self.selected_image = data["imagefile"]
             self.update_image()
+
+    def send_le_message(self, data):
+        
+        payload = dict(
+            type="simple_notify",
+            title=data["title"],
+            text=data["text"],
+            hide=True,
+            delay=10000,
+            notify_type=data["type"]
+        )
+
+        self._plugin_manager.send_plugin_message("latheengraver", payload)
 
     def get_update_information(self):
         # Define the configuration for your plugin to use with the Software Update
