@@ -14,7 +14,7 @@ plugin_package = "octoprint_gcode_ripper"
 plugin_name = "OctoPrint-Gcode_ripper"
 
 # The plugin's version. Can be overwritten within OctoPrint's internal data via __plugin_version__ in the plugin module
-plugin_version = "0.1.14"
+plugin_version = "0.1.15"
 
 # The plugin's description. Can be overwritten within OctoPrint's internal data via __plugin_description__ in the plugin
 # module

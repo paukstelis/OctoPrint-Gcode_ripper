@@ -49,9 +49,16 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
             storage.add_folder("templates")
             templates_folder = os.path.join(self._settings.getBaseFolder("uploads"), "templates")
             source_folder = os.path.join(self._basefolder, "static", "gcode")
+            img_folder = os.path.join(self._basefolder, "static", "img")
             if os.path.exists(source_folder):
                 for file_name in os.listdir(source_folder):
                     if file_name.endswith(".gcode"):
+                        source_file = os.path.join(source_folder, file_name)
+                        destination_file = os.path.join(templates_folder, file_name)
+                        shutil.copy(source_file, destination_file)
+                        self._logger.info(f"Copied {file_name} to templates folder")
+                for file_name in os.listdir(img_folder):
+                    if file_name.endswith(".png"):
                         source_file = os.path.join(source_folder, file_name)
                         destination_file = os.path.join(templates_folder, file_name)
                         shutil.copy(source_file, destination_file)
