@@ -923,8 +923,11 @@ class G_Code_Rip:
 
 
     ####################################### 
-    def scale_rotate_code(self,code2scale,scale=[1.0,1.0,1.0,1.0],angle=0.0,split_moves=False,min_seg_length=1.0):
+    def scale_rotate_code(self,code2scale,scale=[1.0,1.0,1.0,1.0],angle=0.0,split_moves=False,min_seg_length=1.0,plugin=None):
         from math import radians, sqrt
+
+        if plugin:
+            self.plugin = plugin
 
         if code2scale == []:
             return code2scale,0,0,0,0,0,0
@@ -1000,7 +1003,11 @@ class G_Code_Rip:
                 
                 if mvtype == 1:
                     if split_moves:
-                        xy_move_dist = sqrt((pos_last[0] - pos[0]) ** 2 + (pos_last[1] - pos[1]) ** 2)
+                        try:
+                            xy_move_dist = sqrt((pos_last[0] - pos[0]) ** 2 + (pos_last[1] - pos[1]) ** 2)
+                        except:
+                            self.plugin._logger.info("Distance error, setting xy_move_dist to 0")
+                            xy_move_dist = 0.0
                         #print(f"xy move distance is {xy_move_dist}")
                         if xy_move_dist > min_seg_length:
                             segments = floor(xy_move_dist / min_seg_length) + 1

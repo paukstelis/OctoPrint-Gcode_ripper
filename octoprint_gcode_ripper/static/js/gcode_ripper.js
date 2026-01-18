@@ -14,7 +14,7 @@ $(function() {
         self.XscaleFactor = ko.observable(1.0);
         self.AscaleFactor = ko.observable(1.0);
         self.modifyA = ko.observable(1);
-        self.chord = ko.observable(1);
+        self.chord = ko.observable(0);
         self.split_moves = ko.observable(1);
         self.min_seg_length = ko.observable(1.0);
         self.origin = ko.observable("center");
