@@ -1535,6 +1535,10 @@ class G_Code_Rip:
                       preamble="",
                       postamble="",
                       chord=False,
+                      taper_left=0.0,
+                      taper_right=0.0,
+                      minx=0.0,
+                      maxx=0.0,
                       gen_rapids=False,
                       PLACES_L=4,
                       PLACES_R=3,
@@ -1657,6 +1661,16 @@ class G_Code_Rip:
                         #print(rho)
                         coordB[0] = (rho - Rstock)*-1
                         coordB[1]=sign*degrees(atan2(line[2][1],(Rstock+line[2][0]).real))
+
+                if line[0] == 1 and (taper_left != 0.0 or taper_right != 0.0):
+                    x_val = coordB[0]
+                    if x_val <= 0 and minx != 0:
+                        z_adj = -taper_left * (x_val / minx)
+                    elif x_val > 0 and maxx != 0:
+                        z_adj = -taper_right * (x_val / maxx)
+                    else:
+                        z_adj = 0.0
+                    coordB[2] = coordB[2] + z_adj
 
                 dx = coordA[0]-LASTX
                 dy = coordA[1]-LASTY

@@ -34,6 +34,8 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
         self.mapping = "Y2A"
         self.chord = False
         self.split_moves = True
+        self.taper_left = 0.0
+        self.taper_right = 0.0
         self.min_seg = 1.0
         self.datafolder = None
         self.template_name = None
@@ -167,7 +169,11 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
                                           no_variables=True, 
                                           Wrap=self.mapping, 
                                           preamble=pre, 
-                                          chord=self.chord, 
+                                          chord=self.chord,
+                                          taper_left=self.taper_left,
+                                          taper_right=self.taper_right,
+                                          minx=minx,
+                                          maxx=maxx, 
                                           postamble="STOPBANGLE", 
                                           FSCALE="None"):
                 newfile.write(f"\n{line}")
@@ -208,6 +214,8 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
             self.rotation = float(data["rotationAngle"])
             self.modifyA = bool(data["modifyA"])
             self.chord = bool(data["chord"])
+            self.taper_left = float(data["taper_left"])
+            self.taper_right = float(data["taper_right"])
             self.xscalefactor = float(data["xscalefactor"])
             self.ascalefactor = float(data["ascalefactor"])
             self.origin = data["origin"]
