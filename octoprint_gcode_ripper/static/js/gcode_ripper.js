@@ -14,7 +14,9 @@ $(function() {
         self.XscaleFactor = ko.observable(1.0);
         self.AscaleFactor = ko.observable(1.0);
         self.modifyA = ko.observable(1);
-        self.chord = ko.observable(1);
+        self.chord = ko.observable(0);
+        self.taper_left = ko.observable(0.0);
+        self.taper_right = ko.observable(0.0);
         self.split_moves = ko.observable(1);
         self.min_seg_length = ko.observable(1.0);
         self.origin = ko.observable("center");
@@ -127,6 +129,8 @@ $(function() {
                 rotationAngle: self.rotationAngle(),
                 modifyA: self.modifyA(),
                 chord: self.chord(),
+                taper_left: self.taper_left(),
+                taper_right: self.taper_right(),
                 xscalefactor: self.XscaleFactor(),
                 ascalefactor: self.AscaleFactor(),
                 split_moves: self.split_moves(),

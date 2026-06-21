@@ -34,6 +34,8 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
         self.mapping = "Y2A"
         self.chord = False
         self.split_moves = True
+        self.taper_left = 0.0
+        self.taper_right = 0.0
         self.min_seg = 1.0
         self.datafolder = None
         self.template_name = None
@@ -124,7 +126,7 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
         xsf = self.xscalefactor
         asf = self.ascalefactor
         #self._logger.info(gcr.g_code_data[0])
-        temp,minx,maxx,miny,maxy,minz,maxz  = gcr.scale_rotate_code(gcr.g_code_data,[xsf,asf,1,1],self.rotation,split_moves=self.split_moves,min_seg_length=self.min_seg)
+        temp,minx,maxx,miny,maxy,minz,maxz  = gcr.scale_rotate_code(gcr.g_code_data,[xsf,asf,1,1],self.rotation,split_moves=self.split_moves,min_seg_length=self.min_seg,plugin=self)
         midx = (minx+maxx)/2
         midy = (miny+maxy)/2
         #determine origin position
@@ -167,13 +169,18 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
                                           no_variables=True, 
                                           Wrap=self.mapping, 
                                           preamble=pre, 
-                                          chord=self.chord, 
+                                          chord=self.chord,
+                                          taper_left=self.taper_left,
+                                          taper_right=self.taper_right,
+                                          minx=minx,
+                                          maxx=maxx, 
                                           postamble="STOPBANGLE", 
                                           FSCALE="None"):
                 newfile.write(f"\n{line}")
 
         d = dict(title="Gcode Written",text="Gcode has been written and will appear in the file section shortly.",type="info")
         self.send_le_message(d)
+        self._plugin_manager.send_plugin_message('latheengraver',  dict(type='filerefresh'))
     
     def calc_diameter(self):
         if self.zrelative:
@@ -207,6 +214,8 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
             self.rotation = float(data["rotationAngle"])
             self.modifyA = bool(data["modifyA"])
             self.chord = bool(data["chord"])
+            self.taper_left = float(data["taper_left"])
+            self.taper_right = float(data["taper_right"])
             self.xscalefactor = float(data["xscalefactor"])
             self.ascalefactor = float(data["ascalefactor"])
             self.origin = data["origin"]

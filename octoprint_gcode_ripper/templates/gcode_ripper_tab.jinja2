@@ -49,33 +49,36 @@
             </div>
         </div>
             
-        <div class="row" style="padding-left: 30px; padding-bottom: 10px;">
+        <div style="padding-bottom: 10px;">
             <div id="extra_options">
-                <div>
-                    <label for="modifyA_input">Flat pockets:
-                    <i class="icon icon-info-sign" title="Extra Z-depth at cut origin. Uncheck for objects that are not simple pockets. Must also be on when cutting near-polar coordinates (B~=+/-90)" data-toggle="tooltip"></i>
-                    <input id="modifyA_input" type="checkbox" checked data-bind="checked: modifyA">
-                    </label>
+                <div class="span2">
+                    <label title="Extra Z-depth at cut origin. Uncheck for objects that are not simple pockets. Must also be on when cutting near-polar coordinates (B~=+/-90)">
+                    Flat pockets: <input id="modifyA_input" type="checkbox" checked data-bind="checked: modifyA"></label>
                 </div>
-                <div>
-                    <label for="chord_input">Use chord length:
-                    <i class="icon icon-info-sign" title="Calculates A axis values as the chord length, rather than arc length. Increases A rotations slightly." data-toggle="tooltip"></i>
-                    <input id="chord_input" type="checkbox" checked data-bind="checked: chord">
-                    </label>
+                <div class="span2">
+                <label title="Split moves into smaller moves defined by minimum segment length. Needed for flat pockets and near-polar coordinate cutting."> 
+                    Split moves:  <input id="split_input" type="checkbox" checked data-bind="checked: split_moves"></label>
                 </div>
-                <div>
-                    <label for="split_input">Split moves:
-                    <i class="icon icon-info-sign" title="Split moves into smaller moves defined by minimum segment length. Needed for flat pockets and near-polar coordinate cutting." data-toggle="tooltip"></i>
-                    <input id="split_input" type="checkbox" checked data-bind="checked: split_moves">
-                    </label>
-                </div>
-                <div>
+                <br>
+                <div> 
                     <label for="origin_sel">Origin:
                     <select id="origin_sel" name="origin_sel" data-bind="value: origin">
                         <option value="center">Center</option>
                         <option value="left">Left</option>
                         <option value="right">Right</option>
                     </select>
+                    </label>
+                </div>
+                <br>
+                <div>
+                    <label for="taper_left">Taper left (mm):
+                    <i class="icon icon-info-sign" title="Extra Z cutting depth at minimum X value" data-toggle="tooltip"></i>
+                    <input id="taper_left" type="number" min="0.1" value="1" step="0.1" data-bind="value: taper_left" style="width: 50%;">
+                    </label>
+                    <br>
+                    <label for="taper_right">Taper right (mm):
+                    <i class="icon icon-info-sign" title="Extra Z cutting depth at maximum X value" data-toggle="tooltip"></i>
+                    <input id="taper_right" type="number" min="0.1" value="1" step="0.1" data-bind="value: taper_right" style="width: 50%;">
                     </label>
                 </div>
             </div>

@@ -923,8 +923,11 @@ class G_Code_Rip:
 
 
     ####################################### 
-    def scale_rotate_code(self,code2scale,scale=[1.0,1.0,1.0,1.0],angle=0.0,split_moves=False,min_seg_length=1.0):
+    def scale_rotate_code(self,code2scale,scale=[1.0,1.0,1.0,1.0],angle=0.0,split_moves=False,min_seg_length=1.0,plugin=None):
         from math import radians, sqrt
+
+        if plugin:
+            self.plugin = plugin
 
         if code2scale == []:
             return code2scale,0,0,0,0,0,0
@@ -1000,7 +1003,11 @@ class G_Code_Rip:
                 
                 if mvtype == 1:
                     if split_moves:
-                        xy_move_dist = sqrt((pos_last[0] - pos[0]) ** 2 + (pos_last[1] - pos[1]) ** 2)
+                        try:
+                            xy_move_dist = sqrt((pos_last[0] - pos[0]) ** 2 + (pos_last[1] - pos[1]) ** 2)
+                        except:
+                            self.plugin._logger.info("Distance error, setting xy_move_dist to 0")
+                            xy_move_dist = 0.0
                         #print(f"xy move distance is {xy_move_dist}")
                         if xy_move_dist > min_seg_length:
                             segments = floor(xy_move_dist / min_seg_length) + 1
@@ -1528,6 +1535,10 @@ class G_Code_Rip:
                       preamble="",
                       postamble="",
                       chord=False,
+                      taper_left=0.0,
+                      taper_right=0.0,
+                      minx=0.0,
+                      maxx=0.0,
                       gen_rapids=False,
                       PLACES_L=4,
                       PLACES_R=3,
@@ -1650,6 +1661,16 @@ class G_Code_Rip:
                         #print(rho)
                         coordB[0] = (rho - Rstock)*-1
                         coordB[1]=sign*degrees(atan2(line[2][1],(Rstock+line[2][0]).real))
+
+                if line[0] == 1 and (taper_left != 0.0 or taper_right != 0.0):
+                    x_val = coordB[0]
+                    if x_val <= 0 and minx != 0:
+                        z_adj = -taper_left * (x_val / minx)
+                    elif x_val > 0 and maxx != 0:
+                        z_adj = -taper_right * (x_val / maxx)
+                    else:
+                        z_adj = 0.0
+                    coordB[2] = coordB[2] + z_adj
 
                 dx = coordA[0]-LASTX
                 dy = coordA[1]-LASTY
