@@ -154,6 +154,11 @@ class Gcode_ripperPlugin(octoprint.plugin.SettingsPlugin,
             mina = math.degrees(miny/(wrapdiam/2))
             maxa = math.degrees(maxy/(wrapdiam/2))
             maxarc = (abs(mina) + abs(maxa))
+        
+        #Check for wrap
+        self._logger.info(f"Min. A: {mina}, Max. A: {maxa}, Diff: {mina+maxa}")
+        to360 = 360/maxarc
+        self._logger.info(f"Max arc: {maxarc}. Scale to 360: {to360}")
 
         pre = "RTCM\nDOBANGLE\nDIAM {0}\n".format(wrapdiam)
 

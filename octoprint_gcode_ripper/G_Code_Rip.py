@@ -956,7 +956,10 @@ class G_Code_Rip:
                 CENTER   = ['','','']
                 if line[0] == 1:
                     feed     = line[3] * scale[3]
-                    power    = line[4]
+                    try:
+                        power    = line[4]
+                    except:
+                        print("no power")
 
             elif line[0] == 3 or line[0] == 2:
                 mvtype   = line[0]
